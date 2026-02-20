@@ -16,9 +16,9 @@ default = []
 utoipa = ["dep:utoipa", "financial_types/utoipa", "positive/utoipa", "expiration_date/utoipa"]
 
 [dependencies]
-financial_types = { path = "../financial_types", features = ["utoipa"] }
+financial_types = { version = "0.1", features = ["utoipa"] }
 positive = { version = "0.4", features = ["utoipa"] }
-expiration_date = { path = "../ExpirationDate", features = ["utoipa"] }
+expiration_date = { version = "0.1", features = ["utoipa"] }
 serde = { version = "1.0", features = ["derive"] }
 utoipa = { version = "5.4", optional = true }
 
