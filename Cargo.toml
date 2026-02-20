@@ -1,0 +1,53 @@
+[package]
+name = "option_type"
+version = "0.1.0"
+edition = "2024"
+authors = ["Joaquin Bejar <jb@taunais.com>"]
+description = "Option contract type definitions including exotic options: Asian, Barrier, Binary, Lookback, Rainbow, and more."
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/joaquinbejar/option_type"
+homepage = "https://github.com/joaquinbejar/option_type"
+keywords = ["finance", "options", "trading", "exotic-options"]
+categories = ["finance", "data-structures"]
+
+[features]
+default = []
+utoipa = ["dep:utoipa", "financial_types/utoipa", "positive/utoipa", "expiration_date/utoipa"]
+
+[dependencies]
+financial_types = { path = "../financial_types", features = ["utoipa"] }
+positive = { version = "0.4", features = ["utoipa"] }
+expiration_date = { path = "../ExpirationDate", features = ["utoipa"] }
+serde = { version = "1.0", features = ["derive"] }
+utoipa = { version = "5.4", optional = true }
+
+[dev-dependencies]
+serde_json = { version = "1.0" }
+
+[lib]
+name = "option_type"
+path = "src/lib.rs"
+
+[lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+
+[lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+indexing_slicing = "warn"
+needless_collect = "warn"
+unnecessary_to_owned = "warn"
+clone_on_ref_ptr = "warn"
+missing_errors_doc = "warn"
+missing_panics_doc = "warn"
+
+[profile.release]
+overflow-checks = true
+lto = "thin"
+codegen-units = 1
+
+[profile.dev]
+overflow-checks = true
