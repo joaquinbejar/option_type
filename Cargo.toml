@@ -1,6 +1,6 @@
 [package]
 name = "option_type"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 authors = ["Joaquin Bejar <jb@taunais.com>"]
 description = "Option contract type definitions including exotic options: Asian, Barrier, Binary, Lookback, Rainbow, and more."
@@ -17,8 +17,8 @@ utoipa = ["dep:utoipa", "financial_types/utoipa", "positive/utoipa", "expiration
 
 [dependencies]
 financial_types = { version = "0.1", features = ["utoipa"] }
-positive = { version = "0.4", features = ["utoipa"] }
-expiration_date = { version = "0.1", features = ["utoipa"] }
+positive = { version = "0.5", features = ["utoipa"] }
+expiration_date = { version = "0.1.2", features = ["utoipa"] }
 serde = { version = "1.0", features = ["derive"] }
 utoipa = { version = "5.4", optional = true }
 
