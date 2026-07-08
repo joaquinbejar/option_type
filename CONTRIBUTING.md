@@ -103,6 +103,20 @@ Every PR adds an entry under the `## [Unreleased]` section of
 `Fixed`, etc.). The `[Unreleased]` section is promoted to a dated version at
 release time.
 
+## Coverage policy
+
+Coverage is measured with `cargo tarpaulin` in CI and reported to
+[Codecov](https://codecov.io/gh/joaquinbejar/option_type). The gate is
+configured in [`codecov.yml`](./codecov.yml):
+
+- **Project coverage** must stay at or above **80%**, and a PR may not drop
+  it by more than **2 percentage points**.
+- **Patch coverage**: the lines a PR adds or changes must themselves be at
+  least **80%** covered.
+
+PRs failing either check are not merged. Run `make coverage` locally to
+inspect coverage before pushing.
+
 ## Semver discipline
 
 This crate is consumed by downstream pricing and analytics code, and its public

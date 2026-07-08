@@ -7,38 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-
-- Standardized CI caching across all workflows on `Swatinem/rust-cache@v2`,
-  replacing the hand-rolled `actions/cache@v4` blocks in `build.yml`,
-  `code_coverage.yml`, `format_check.yml`, `lint.yml`, `msrv.yml`, and
-  `release.yml`. The old keys were partly broken: `hashFiles('**/Cargo.lock')`
-  hashed a file that isn't tracked in the repo (`Cargo.lock` is `.gitignore`d),
-  so on a fresh checkout the key was effectively constant and never
-  invalidated by dependency changes. `rust-cache` derives its key from
-  `Cargo.toml`/workspace metadata and the resolved dependency graph instead,
-  and (for `msrv.yml`) automatically separates the 1.85 toolchain's cache from
-  the `stable` jobs' by keying on the compiler version, so the hand-rolled
-  `-msrv-` key suffix is no longer needed. `build.yml`'s two-OS matrix now
-  passes `key: ${{ matrix.os }}` to `rust-cache` so `ubuntu-22.04` and
-  `ubuntu-latest` don't share a cache slot. `audit.yml` was left without
-  `rust-cache`: `actions-rust-lang/audit@v1` only installs and runs
-  `cargo-audit` against `Cargo.lock` — it never compiles this crate or its
-  dependency graph, so a build-artifact cache has nothing to speed up (and
-  the action already caches its own `cargo-audit` binary internally).
-- Added a `concurrency: { group: ${{ github.workflow }}-${{ github.ref }},
-  cancel-in-progress: true }` block to every workflow except `release.yml`,
-  so superseded runs on the same branch/PR are cancelled instead of queuing
-  (`code_coverage.yml` and `semver.yml` already had this and are unchanged).
-  `release.yml` intentionally has no concurrency block — a release run must
-  never be auto-cancelled mid-publish. `release.yml` still gained
-  `rust-cache` since it runs the full pre-submission checklist
-  (`clippy`, tests, `cargo build --release`, `cargo doc`) and caching only
-  speeds up compilation there; it never affects which artifacts get
-  published since `cargo publish` always builds from a fresh, verified
-  package.
-
 ### Added
+
+- Coverage threshold gate via `codecov.yml`: project coverage target 80%
+  with a 2-percentage-point drop tolerance, and 80% patch coverage for
+  new/changed lines. PR comments require changed coverage. The policy is
+  documented in `CONTRIBUTING.md`.
 
 - `CONTRIBUTING.md` and `SECURITY.md` at the repository root. `CONTRIBUTING.md`
   documents the branching model (`issue-<n>-<slug>` branches, one issue per PR,
@@ -108,6 +82,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `README.md` / `README.tpl` under a new "Releasing" section.
 
 ### Changed
+
+- Standardized CI caching across all workflows on `Swatinem/rust-cache@v2`,
+  replacing the hand-rolled `actions/cache@v4` blocks in `build.yml`,
+  `code_coverage.yml`, `format_check.yml`, `lint.yml`, `msrv.yml`, and
+  `release.yml`. The old keys were partly broken: `hashFiles('**/Cargo.lock')`
+  hashed a file that isn't tracked in the repo (`Cargo.lock` is `.gitignore`d),
+  so on a fresh checkout the key was effectively constant and never
+  invalidated by dependency changes. `rust-cache` derives its key from
+  `Cargo.toml`/workspace metadata and the resolved dependency graph instead,
+  and (for `msrv.yml`) automatically separates the 1.85 toolchain's cache from
+  the `stable` jobs' by keying on the compiler version, so the hand-rolled
+  `-msrv-` key suffix is no longer needed. `build.yml`'s two-OS matrix now
+  passes `key: ${{ matrix.os }}` to `rust-cache` so `ubuntu-22.04` and
+  `ubuntu-latest` don't share a cache slot. `audit.yml` was left without
+  `rust-cache`: `actions-rust-lang/audit@v1` only installs and runs
+  `cargo-audit` against `Cargo.lock` — it never compiles this crate or its
+  dependency graph, so a build-artifact cache has nothing to speed up (and
+  the action already caches its own `cargo-audit` binary internally).
+- Added a `concurrency: { group: ${{ github.workflow }}-${{ github.ref }},
+  cancel-in-progress: true }` block to every workflow except `release.yml`,
+  so superseded runs on the same branch/PR are cancelled instead of queuing
+  (`code_coverage.yml` and `semver.yml` already had this and are unchanged).
+  `release.yml` intentionally has no concurrency block — a release run must
+  never be auto-cancelled mid-publish. `release.yml` still gained
+  `rust-cache` since it runs the full pre-submission checklist
+  (`clippy`, tests, `cargo build --release`, `cargo doc`) and caching only
+  speeds up compilation there; it never affects which artifacts get
+  published since `cargo publish` always builds from a fresh, verified
+  package.
 
 - Split `src/lib.rs` into focused modules (`option_type`, `sub_enums/*`,
   `basic_type`); crate root now holds docs and re-exports only. Pure
