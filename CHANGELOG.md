@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Split `src/lib.rs` into focused modules (`option_type`, `sub_enums/*`,
+  `basic_type`); crate root now holds docs and re-exports only. Pure
+  refactor — public API unchanged.
+
 ## [0.1.2] - 2026-04-15
 
 ### Changed
