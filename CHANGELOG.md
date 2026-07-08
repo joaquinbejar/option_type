@@ -40,6 +40,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   login credentials are available). Added a self-documenting `help` target
   listing every Make target.
 
+### Fixed
+
+- CI `format_check` job now runs `make fmt-check` (`cargo fmt --all --check`)
+  instead of the auto-formatting `make fmt`, so formatting drift actually
+  fails the job.
+
 ## [0.1.2] - 2026-04-15
 
 ### Changed
