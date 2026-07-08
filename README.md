@@ -13,201 +13,74 @@
 
 ## Option Type
 
-Option contract type definitions including standard and exotic options for Rust.
+Option contract type definitions including standard and exotic options.
 
-### Overview
+This crate provides the [`OptionType`] enum which classifies options contracts
+by their exercise characteristics and payoff structures:
 
-`option_type` is a Rust crate providing a comprehensive enum-based classification
-of financial option contracts. It covers both standard vanilla options (European,
-American) and a wide range of exotic option types.
+- **Standard**: European, American
+- **Path-dependent**: Asian, Barrier, Lookback, Cliquet
+- **Multi-asset**: Rainbow, Spread, Exchange
+- **Structural**: Compound, Chooser, Binary, Bermuda
+- **Modified payoff**: Power, Quanto
 
-All leaf sub-enums use `#[repr(u8)]` for compact memory layout (1 byte each).
-Pure helper methods are annotated with `#[must_use]` and `#[inline]`.
-
-### Supported Option Types
-
-| Category | Types |
-|---|---|
-| **Standard** | European, American |
-| **Path-dependent** | Asian, Barrier, Lookback, Cliquet |
-| **Multi-asset** | Rainbow, Spread, Exchange |
-| **Structural** | Compound, Chooser, Binary, Bermuda |
-| **Modified payoff** | Power, Quanto |
-
-### Sub-type Enums
+It also provides sub-type enums used within exotic option variants:
 
 | Enum | Variants | Description |
 |---|---|---|
-| `AsianAveragingType` | Arithmetic, Geometric | Averaging method for Asian options |
-| `BarrierType` | UpAndIn, UpAndOut, DownAndIn, DownAndOut | Barrier trigger conditions |
-| `BinaryType` | CashOrNothing, AssetOrNothing, Gap | Binary option payout types |
-| `LookbackType` | FixedStrike, FloatingStrike | Lookback strike determination |
-| `RainbowType` | BestOf, WorstOf | Multi-asset selection method |
+| [`AsianAveragingType`] | `Arithmetic`, `Geometric` | Averaging method for Asian options |
+| [`BarrierType`] | `UpAndIn`, `UpAndOut`, `DownAndIn`, `DownAndOut` | Barrier trigger conditions |
+| [`BinaryType`] | `CashOrNothing`, `AssetOrNothing`, `Gap` | Binary option payout types |
+| [`LookbackType`] | `FixedStrike`, `FloatingStrike` | Lookback strike determination |
+| [`RainbowType`] | `BestOf`, `WorstOf` | Multi-asset selection method |
+
+And the lightweight [`OptionBasicType`] struct for referencing core option properties.
+
+All leaf enums use `#[repr(u8)]` for compact memory layout.
+Pure helper methods are annotated with `#[must_use]` and `#[inline]`.
 
 ### Features
 
-- **Comprehensive**: 15 option type variants covering vanilla and exotic options
-- **Compact sub-enums**: All leaf enums are `#[repr(u8)]` — 1 byte each
-- **Safe**: `#[must_use]` on all pure helper methods
-- **Serde**: Full serialization/deserialization support
-- **OpenAPI**: Optional `utoipa` support via feature flag
-- **Helpers**: `is_european()`, `is_exotic()`, `is_path_dependent()`, `is_multi_asset()`, and more
+- Full `serde` serialization/deserialization support
+- Optional `utoipa` support for OpenAPI schema generation (enable the `utoipa` feature)
+- Depends on [`financial_types`] for `OptionStyle` and `Side`
+- Depends on [`positive`] for `Positive` type-safe values
+- Depends on [`expiration_date`] for `ExpirationDate`
 
 ### Feature flags
 
 - **`utoipa`** (off by default): adds a `utoipa::ToSchema` derivation to every
-  public type (`OptionType`, the leaf sub-enums, and `OptionBasicType`) so they
-  can be embedded in OpenAPI schemas, and forwards the feature to the
-  `financial_types`, `positive`, and `expiration_date` dependencies.
+  public type — [`OptionType`], the leaf sub-enums, and [`OptionBasicType`] —
+  so they can be embedded in OpenAPI schemas, and forwards the feature to the
+  [`financial_types`], [`positive`], and [`expiration_date`] dependencies.
 
-All public types exist in both configurations; the feature only adds the
-`ToSchema` implementation, so no item is gated behind `utoipa`.
+Note that all public types exist in both configurations; the feature only adds
+the `ToSchema` implementation. No item in this crate is gated behind `utoipa`,
+so none carries a `doc(cfg)` badge on <https://docs.rs>.
 
-### Dependencies
-
-- [`financial_types`](https://crates.io/crates/financial_types) — `OptionStyle`, `Side`
-- [`positive`](https://crates.io/crates/positive) — Type-safe positive decimal values
-- [`expiration_date`](https://crates.io/crates/expiration_date) — Expiration date handling
-
-### Installation
-
-Add this to your `Cargo.toml`:
-
-```toml
-[dependencies]
-option_type = "0.1"
-```
-
-To enable OpenAPI schema support:
-
-```toml
-[dependencies]
-option_type = { version = "0.1", features = ["utoipa"] }
-```
-
-### Quick Start
+### Usage
 
 ```rust
 use option_type::{OptionType, AsianAveragingType, BarrierType};
 
-// Standard options
 let european = OptionType::European;
-assert!(european.is_european());
-assert!(!european.is_exotic());
-
-// Exotic options
 let asian = OptionType::Asian {
     averaging_type: AsianAveragingType::Arithmetic,
 };
-assert!(asian.is_exotic());
-assert!(asian.is_path_dependent());
-
-// Barrier options
 let barrier = OptionType::Barrier {
     barrier_type: BarrierType::UpAndIn,
     barrier_level: 120.0,
     rebate: None,
 };
-assert!(barrier.is_path_dependent());
 
-// Display
 assert_eq!(format!("{european}"), "European Option");
+assert!(european.is_european());
+assert!(asian.is_exotic());
+assert!(barrier.is_path_dependent());
 ```
 
-### API
 
-#### `OptionType`
-
-The main enum classifying option contracts:
-
-```rust
-use option_type::OptionType;
-
-let opt = OptionType::default(); // European
-assert!(opt.is_european());
-assert!(!opt.is_exotic());
-assert!(!opt.is_path_dependent());
-assert!(!opt.is_multi_asset());
-```
-
-Helpers: `is_european()`, `is_american()`, `is_exotic()`, `is_path_dependent()`, `is_multi_asset()`
-
-#### `BarrierType`
-
-```rust
-use option_type::BarrierType;
-
-let barrier = BarrierType::UpAndIn;
-assert!(barrier.is_knock_in());
-assert!(barrier.is_up());
-assert!(!barrier.is_knock_out());
-assert!(!barrier.is_down());
-```
-
-Helpers: `is_knock_in()`, `is_knock_out()`, `is_up()`, `is_down()`
-
-#### `AsianAveragingType`
-
-```rust
-use option_type::AsianAveragingType;
-
-let avg = AsianAveragingType::Arithmetic;
-assert!(avg.is_arithmetic());
-assert!(!avg.is_geometric());
-```
-
-Helpers: `is_arithmetic()`, `is_geometric()`
-
-#### `RainbowType`
-
-```rust
-use option_type::RainbowType;
-
-let rainbow = RainbowType::BestOf;
-assert!(rainbow.is_best_of());
-assert!(!rainbow.is_worst_of());
-```
-
-Helpers: `is_best_of()`, `is_worst_of()`
-
-#### `OptionBasicType`
-
-A lightweight struct referencing core option properties:
-
-```rust
-use option_type::OptionBasicType;
-use financial_types::{OptionStyle, Side};
-use positive::Positive;
-use expiration_date::ExpirationDate;
-use positive::pos_or_panic;
-
-let style = OptionStyle::Call;
-let side = Side::Long;
-let strike = Positive::new(100.0).unwrap();
-let expiry = ExpirationDate::Days(pos_or_panic!(30.0));
-
-let basic = OptionBasicType {
-    option_style: &style,
-    side: &side,
-    strike_price: &strike,
-    expiration_date: &expiry,
-};
-```
-
-#### Serialization
-
-```rust
-use option_type::{OptionType, AsianAveragingType};
-
-let opt = OptionType::Asian {
-    averaging_type: AsianAveragingType::Geometric,
-};
-let json = serde_json::to_string(&opt).unwrap();
-let parsed: OptionType = serde_json::from_str(&json).unwrap();
-assert_eq!(opt, parsed);
-```
-
-### Examples
+## Examples
 
 Runnable examples live under [`examples/`](./examples). Each prints a short,
 self-explanatory walkthrough of one part of the API:
@@ -219,7 +92,8 @@ self-explanatory walkthrough of one part of the API:
 | `serde_roundtrip` | Serialize a variety of variants to JSON and deserialize them back, printing the JSON | `cargo run --example serde_roundtrip` |
 | `option_basic_type` | Assemble an `OptionBasicType` from `OptionStyle`, `Side`, `Positive`, and `ExpirationDate`, printing its borrowed fields | `cargo run --example option_basic_type` |
 
-### MSRV
+
+## MSRV
 
 The Minimum Supported Rust Version (MSRV) is **1.85** (required by `edition = "2024"`
 and by this crate's direct dependencies). CI enforces the MSRV via a dedicated
@@ -228,7 +102,8 @@ and by this crate's direct dependencies). CI enforces the MSRV via a dedicated
 MSRV bumps are considered breaking changes and require a major (or pre-1.0
 minor) version bump.
 
-### Releasing
+
+## Releasing
 
 Releases are tag-driven:
 
@@ -239,11 +114,6 @@ Releases are tag-driven:
 3. `.github/workflows/release.yml` validates the tag against `Cargo.toml`,
    runs the full check matrix, publishes to crates.io, and creates the
    GitHub Release from the matching `CHANGELOG.md` section.
-
-### License
-
-This project is licensed under the MIT License.
-
 
 
 ## Contribution and Contact

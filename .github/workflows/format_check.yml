@@ -43,3 +43,9 @@ jobs:
 
       - name: Format check
         run: make fmt-check
+
+      - name: Install cargo-readme
+        run: command -v cargo-readme > /dev/null || cargo install cargo-readme --locked
+
+      - name: README sync check
+        run: make readme-check

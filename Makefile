@@ -88,7 +88,7 @@ check: fmt-check lint test ## Run fmt-check, lint, and test
 	@echo "✅ All checks passed!"
 
 .PHONY: pre-push
-pre-push: fmt-check lint test test-default release doc-check ## Run the full pre-push check gate (pure check, no auto-fixing)
+pre-push: fmt-check lint test test-default release doc-check readme-check ## Run the full pre-push check gate (pure check, no auto-fixing)
 	@echo "✅ All pre-push checks passed!"
 
 # =============================================================================
@@ -109,6 +109,25 @@ doc-check: ## Build docs with all features, denying warnings (matches CI)
 doc-open: ## Open generated documentation in browser
 	@echo "📚 Opening documentation in browser..."
 	cargo doc --no-deps --open
+
+.PHONY: readme
+readme: ## Regenerate README.md from src/lib.rs crate docs + README.tpl
+	@echo "📝 Regenerating README.md from crate docs..."
+	@command -v cargo-readme > /dev/null || cargo install cargo-readme --locked
+	@tmp=$$(mktemp) && \
+		{ cargo readme > "$$tmp" || { rm -f "$$tmp"; echo "❌ cargo readme failed; README.md left untouched."; exit 1; }; } && \
+		mv "$$tmp" README.md
+	@echo "✅ README.md regenerated."
+
+.PHONY: readme-check
+readme-check: ## Verify README.md is in sync with src/lib.rs crate docs + README.tpl
+	@echo "🔍 Checking README.md is in sync with crate docs..."
+	@command -v cargo-readme > /dev/null || cargo install cargo-readme --locked
+	@tmp=$$(mktemp) && \
+		{ cargo readme > "$$tmp" || { rm -f "$$tmp"; echo "❌ cargo readme failed; cannot check README sync."; exit 1; }; } && \
+		{ diff -q "$$tmp" README.md > /dev/null || { rm -f "$$tmp"; echo "❌ README.md is out of sync with src/lib.rs / README.tpl. Run 'make readme' and commit the result."; exit 1; }; } && \
+		rm -f "$$tmp"
+	@echo "✅ README.md is in sync."
 
 .PHONY: publish-dry
 publish-dry: ## Dry-run cargo publish (no upload, safe to re-run)
