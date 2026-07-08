@@ -12,10 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - docs.rs metadata for full-feature documentation rendering:
   `[package.metadata.docs.rs]` with `all-features = true` and
   `rustdoc-args = ["--cfg", "docsrs"]`, plus `#![cfg_attr(docsrs,
-  feature(doc_cfg))]` in `src/lib.rs` so docs.rs (which builds on nightly)
-  can render feature badges. Because the `utoipa` feature gates only the
-  `ToSchema` derive — no whole item exists solely under the feature — no
-  `doc(cfg)` badges are emitted; instead a "Feature flags" section was added to
+  feature(doc_cfg))]` in `src/lib.rs`. The `doc_cfg` feature only takes
+  effect when `#[doc(cfg(...))]` annotations are present; the crate has none
+  today, because the `utoipa` feature gates only the `ToSchema` derive — no
+  whole item exists solely under the feature — so enabling it is
+  forward-preparation. Instead, a "Feature flags" section was added to
   the crate docs (`src/lib.rs`) and mirrored in `README.md` to document what the
   `utoipa` feature adds. The `docsrs` cfg is inert on stable and does not trigger
   `unexpected_cfgs` (rustc allowlists it in check-cfg), so no `check-cfg`
