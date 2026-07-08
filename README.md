@@ -118,13 +118,19 @@ Releases are tag-driven:
 
 ## Contribution and Contact
 
-We welcome contributions to this project! If you would like to contribute, please follow these steps:
+We welcome contributions to this project! Please read
+[CONTRIBUTING.md](https://github.com/joaquinbejar/option_type/blob/main/CONTRIBUTING.md) for the full workflow — branching model,
+the `make pre-push` check gate, commit conventions, README regeneration, and
+semver discipline — then:
 
 1. Fork the repository.
 2. Create a new branch for your feature or bug fix.
 3. Make your changes and ensure that the project still builds and all tests pass.
 4. Commit your changes and push your branch to your forked repository.
 5. Submit a pull request to the main repository.
+
+Found a security vulnerability? Please **do not** open a public issue — follow
+the private reporting process in [SECURITY.md](https://github.com/joaquinbejar/option_type/blob/main/SECURITY.md).
 
 If you have any questions, issues, or would like to provide feedback, please feel free to contact the project maintainer:
 
