@@ -197,6 +197,18 @@ let parsed: OptionType = serde_json::from_str(&json).unwrap();
 assert_eq!(opt, parsed);
 ```
 
+### Examples
+
+Runnable examples live under [`examples/`](./examples). Each prints a short,
+self-explanatory walkthrough of one part of the API:
+
+| Example | Description | Command |
+|---|---|---|
+| `basic_usage` | Construct European/American options, query the `is_*` helpers, print `Display` labels | `cargo run --example basic_usage` |
+| `exotic_options` | Build Asian, Barrier, Lookback, Rainbow, and Bermuda options with realistic payloads and print their classification | `cargo run --example exotic_options` |
+| `serde_roundtrip` | Serialize a variety of variants to JSON and deserialize them back, printing the JSON | `cargo run --example serde_roundtrip` |
+| `option_basic_type` | Assemble an `OptionBasicType` from `OptionStyle`, `Side`, `Positive`, and `ExpirationDate`, printing its borrowed fields | `cargo run --example option_basic_type` |
+
 ### License
 
 This project is licensed under the MIT License.

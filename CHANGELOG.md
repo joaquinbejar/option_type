@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Runnable examples under `examples/`: `basic_usage.rs` (standard option types
+  and classification helpers), `exotic_options.rs` (Asian, Barrier, Lookback,
+  Rainbow, and Bermuda variants with realistic payloads), `serde_roundtrip.rs`
+  (JSON serialize/deserialize of a variety of variants), and
+  `option_basic_type.rs` (assembling `OptionBasicType` from its borrowed
+  primitive fields). Each is invoked via `cargo run --example <name>`.
 - Integration test suite under `tests/` exercising the crate through its
   public surface only: `serde_roundtrip.rs` (round-trip of every serializable
   enum variant), `display.rs` (exact `Display` labels), `helpers.rs` (every
