@@ -13,11 +13,14 @@
 //! - **Modified payoff**: Power, Quanto
 //!
 //! It also provides sub-type enums used within exotic option variants:
-//! - [`AsianAveragingType`] — Arithmetic or Geometric averaging
-//! - [`BarrierType`] — Up/Down and In/Out barrier conditions
-//! - [`BinaryType`] — Cash-or-nothing, Asset-or-nothing, Gap
-//! - [`LookbackType`] — Fixed or Floating strike
-//! - [`RainbowType`] — Best-of or Worst-of multi-asset
+//!
+//! | Enum | Variants | Description |
+//! |---|---|---|
+//! | [`AsianAveragingType`] | `Arithmetic`, `Geometric` | Averaging method for Asian options |
+//! | [`BarrierType`] | `UpAndIn`, `UpAndOut`, `DownAndIn`, `DownAndOut` | Barrier trigger conditions |
+//! | [`BinaryType`] | `CashOrNothing`, `AssetOrNothing`, `Gap` | Binary option payout types |
+//! | [`LookbackType`] | `FixedStrike`, `FloatingStrike` | Lookback strike determination |
+//! | [`RainbowType`] | `BestOf`, `WorstOf` | Multi-asset selection method |
 //!
 //! And the lightweight [`OptionBasicType`] struct for referencing core option properties.
 //!

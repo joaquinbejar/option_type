@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `cargo-readme` wiring to keep `README.md` generated from `src/lib.rs` crate
+  docs + `README.tpl` instead of hand-maintained: new `make readme` target
+  (regenerates `README.md`, auto-installing `cargo-readme` if absent, mirroring
+  the `coverage` target's `cargo-tarpaulin` auto-install pattern) and
+  `make readme-check` target (fails with a pointer to `make readme` when
+  `README.md` drifts from the generated output). `make readme-check` is now
+  part of `make pre-push`, and `.github/workflows/format_check.yml` runs it
+  in CI after `fmt-check` so a stale `README.md` fails the build. Added a
+  "Sub-type Enums" table (real variant names for `AsianAveragingType`,
+  `BarrierType`, `BinaryType`, `LookbackType`, `RainbowType`) to the
+  `src/lib.rs` crate docs so the regenerated `README.md` (and docs.rs) stay
+  informative now that the old hand-written Overview/API body is gone.
 - docs.rs metadata for full-feature documentation rendering:
   `[package.metadata.docs.rs]` with `all-features = true` and
   `rustdoc-args = ["--cfg", "docsrs"]`, plus `#![cfg_attr(docsrs,
