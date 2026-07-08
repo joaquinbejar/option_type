@@ -218,6 +218,18 @@ and by this crate's direct dependencies). CI enforces the MSRV via a dedicated
 MSRV bumps are considered breaking changes and require a major (or pre-1.0
 minor) version bump.
 
+### Releasing
+
+Releases are tag-driven:
+
+1. Bump `version` in `Cargo.toml`; promote `[Unreleased]` in `CHANGELOG.md`
+   to a dated `## [X.Y.Z]` section.
+2. Ensure `make pre-push` is clean, then run `make tag` and
+   `git push origin vX.Y.Z`.
+3. `.github/workflows/release.yml` validates the tag against `Cargo.toml`,
+   runs the full check matrix, publishes to crates.io, and creates the
+   GitHub Release from the matching `CHANGELOG.md` section.
+
 ### License
 
 This project is licensed under the MIT License.

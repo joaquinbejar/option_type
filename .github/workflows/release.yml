@@ -1,0 +1,126 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Fails fast, before any check or publish runs, if the pushed tag does
+      # not match Cargo.toml, or if CHANGELOG.md has no matching section.
+      # A release must never be published without notes.
+      - name: Validate tag matches Cargo.toml version and extract release notes
+        run: |
+          set -euo pipefail
+
+          version=$(grep '^version' Cargo.toml | head -1 | sed 's/.*"\(.*\)"/\1/')
+          tag_version="${GITHUB_REF_NAME#v}"
+
+          echo "Cargo.toml version: $version"
+          echo "Tag version:        $tag_version"
+
+          if [ "$version" != "$tag_version" ]; then
+            echo "::error::Tag '$GITHUB_REF_NAME' does not match Cargo.toml version '$version'. Aborting release before any checks or publish run."
+            exit 1
+          fi
+
+          # Escape dots so the version string is matched literally in awk.
+          version_re=$(printf '%s' "$version" | sed 's/[.]/\\./g')
+          raw_notes="${RUNNER_TEMP:-/tmp}/release_notes.raw"
+          notes_file="${RUNNER_TEMP:-/tmp}/release_notes.md"
+
+          awk -v ver="$version_re" '
+            $0 ~ "^## \\[" ver "\\]" { flag=1; next }
+            /^## \[/ { flag=0 }
+            flag { print }
+          ' CHANGELOG.md > "$raw_notes"
+
+          # Trim leading/trailing blank lines for a clean release body.
+          awk '
+            { lines[NR] = $0 }
+            END {
+              start = 1
+              while (start <= NR && lines[start] == "") start++
+              end = NR
+              while (end >= start && lines[end] == "") end--
+              for (i = start; i <= end; i++) print lines[i]
+            }
+          ' "$raw_notes" > "$notes_file"
+
+          if [ ! -s "$notes_file" ]; then
+            echo "::error::No CHANGELOG.md section found for version '$version' (expected a '## [$version]' heading). Aborting release before publish."
+            exit 1
+          fi
+
+          echo "----- Extracted release notes for v$version -----"
+          cat "$notes_file"
+          echo "---------------------------------------------------"
+
+          echo "RELEASE_NOTES_PATH=$notes_file" >> "$GITHUB_ENV"
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+
+      - name: Cache Rust dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-release-${{ hashFiles('**/Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-release-
+
+
+      - name: Check formatting
+        run: cargo fmt --all --check
+
+      - name: Clippy (all targets, all features)
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Test (all features)
+        run: cargo test --all-features
+
+      - name: Test (no default features)
+        run: cargo test --no-default-features
+
+      - name: Build release
+        run: cargo build --release
+
+      - name: Doc build (all features, deny warnings)
+        run: cargo doc --no-deps --all-features
+        env:
+          RUSTDOCFLAGS: "-D warnings"
+
+      - name: Audit Rust dependencies (RustSec)
+        uses: actions-rust-lang/audit@v1
+
+      # Publish only after every check above has passed.
+      - name: Publish to crates.io
+        run: cargo publish
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+
+      # Create the GitHub Release only after publish has succeeded.
+      - name: Create GitHub Release
+        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file "$RELEASE_NOTES_PATH"
+        env:
+          GH_TOKEN: ${{ github.token }}
