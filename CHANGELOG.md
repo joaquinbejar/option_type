@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- docs.rs metadata for full-feature documentation rendering:
+  `[package.metadata.docs.rs]` with `all-features = true` and
+  `rustdoc-args = ["--cfg", "docsrs"]`, plus `#![cfg_attr(docsrs,
+  feature(doc_cfg))]` in `src/lib.rs` so docs.rs (which builds on nightly)
+  can render feature badges. Because the `utoipa` feature gates only the
+  `ToSchema` derive — no whole item exists solely under the feature — no
+  `doc(cfg)` badges are emitted; instead a "Feature flags" section was added to
+  the crate docs (`src/lib.rs`) and mirrored in `README.md` to document what the
+  `utoipa` feature adds. The `docsrs` cfg is inert on stable and does not trigger
+  `unexpected_cfgs` (rustc allowlists it in check-cfg), so no `check-cfg`
+  declaration is required.
 - Declared the Minimum Supported Rust Version: `rust-version = "1.85"` in
   `Cargo.toml` (required by `edition = "2024"` and by this crate's direct
   dependencies — `financial_types` and `expiration_date` both declare
