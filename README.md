@@ -209,6 +209,15 @@ self-explanatory walkthrough of one part of the API:
 | `serde_roundtrip` | Serialize a variety of variants to JSON and deserialize them back, printing the JSON | `cargo run --example serde_roundtrip` |
 | `option_basic_type` | Assemble an `OptionBasicType` from `OptionStyle`, `Side`, `Positive`, and `ExpirationDate`, printing its borrowed fields | `cargo run --example option_basic_type` |
 
+### MSRV
+
+The Minimum Supported Rust Version (MSRV) is **1.85** (required by `edition = "2024"`
+and by this crate's direct dependencies). CI enforces the MSRV via a dedicated
+`msrv.yml` workflow that builds and tests the crate on the pinned toolchain.
+
+MSRV bumps are considered breaking changes and require a major (or pre-1.0
+minor) version bump.
+
 ### License
 
 This project is licensed under the MIT License.
