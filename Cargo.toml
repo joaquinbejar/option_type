@@ -12,6 +12,15 @@ homepage = "https://github.com/joaquinbejar/option_type"
 keywords = ["finance", "options", "trading", "exotic-options"]
 categories = ["finance", "data-structures"]
 
+# docs.rs builds with every feature enabled and sets `--cfg docsrs`, which
+# enables `doc_cfg` (see `#![cfg_attr(docsrs, feature(doc_cfg))]` in lib.rs).
+# `doc_cfg` only matters when `#[doc(cfg(...))]` annotations exist; the crate
+# has none today (the `utoipa` feature gates derives, not items) — this is
+# forward-preparation for any future feature-gated item.
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
 [features]
 default = []
 utoipa = ["dep:utoipa", "financial_types/utoipa", "positive/utoipa", "expiration_date/utoipa"]

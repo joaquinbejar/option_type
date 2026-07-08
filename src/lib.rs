@@ -1,3 +1,4 @@
+#![cfg_attr(docsrs, feature(doc_cfg))]
 //! # Option Type
 //!
 //! Option contract type definitions including standard and exotic options.
@@ -30,6 +31,17 @@
 //! - Depends on [`financial_types`] for `OptionStyle` and `Side`
 //! - Depends on [`positive`] for `Positive` type-safe values
 //! - Depends on [`expiration_date`] for `ExpirationDate`
+//!
+//! ## Feature flags
+//!
+//! - **`utoipa`** (off by default): adds a `utoipa::ToSchema` derivation to every
+//!   public type — [`OptionType`], the leaf sub-enums, and [`OptionBasicType`] —
+//!   so they can be embedded in OpenAPI schemas, and forwards the feature to the
+//!   [`financial_types`], [`positive`], and [`expiration_date`] dependencies.
+//!
+//! Note that all public types exist in both configurations; the feature only adds
+//! the `ToSchema` implementation. No item in this crate is gated behind `utoipa`,
+//! so none carries a `doc(cfg)` badge on <https://docs.rs>.
 //!
 //! ## Usage
 //!

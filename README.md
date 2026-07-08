@@ -53,6 +53,16 @@ Pure helper methods are annotated with `#[must_use]` and `#[inline]`.
 - **OpenAPI**: Optional `utoipa` support via feature flag
 - **Helpers**: `is_european()`, `is_exotic()`, `is_path_dependent()`, `is_multi_asset()`, and more
 
+### Feature flags
+
+- **`utoipa`** (off by default): adds a `utoipa::ToSchema` derivation to every
+  public type (`OptionType`, the leaf sub-enums, and `OptionBasicType`) so they
+  can be embedded in OpenAPI schemas, and forwards the feature to the
+  `financial_types`, `positive`, and `expiration_date` dependencies.
+
+All public types exist in both configurations; the feature only adds the
+`ToSchema` implementation, so no item is gated behind `utoipa`.
+
 ### Dependencies
 
 - [`financial_types`](https://crates.io/crates/financial_types) — `OptionStyle`, `Side`
