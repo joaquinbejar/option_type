@@ -83,6 +83,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The `financial_types`, `positive`, and `expiration_date` dependencies no
+  longer enable their `utoipa` feature unconditionally — it is now activated
+  only through this crate's `utoipa` feature, matching the documented feature
+  contract. Builds without the feature no longer compile the dependencies'
+  `ToSchema` machinery. Note for downstream users who relied on the
+  (undocumented) always-on activation: enable the `utoipa` feature
+  explicitly. Full removal of `utoipa` from the no-feature dependency tree
+  additionally requires an upstream `positive` release that stops hardwiring
+  it.
 - Standardized CI caching across all workflows on `Swatinem/rust-cache@v2`,
   replacing the hand-rolled `actions/cache@v4` blocks in `build.yml`,
   `code_coverage.yml`, `format_check.yml`, `lint.yml`, `msrv.yml`, and
