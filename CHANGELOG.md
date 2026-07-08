@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Declared the Minimum Supported Rust Version: `rust-version = "1.85"` in
+  `Cargo.toml` (required by `edition = "2024"` and by this crate's direct
+  dependencies — `financial_types` and `expiration_date` both declare
+  `rust-version = "1.85"`). Verified empirically with
+  `cargo +1.85 build --all-features` and `cargo +1.85 test --all-features`.
+  Added a dedicated `.github/workflows/msrv.yml` CI job that builds and tests
+  (`--all-features` and `--no-default-features`) on the pinned MSRV toolchain.
+  Documented the MSRV and its bump policy in `README.md` / `README.tpl`: MSRV
+  bumps are breaking changes and require a major (or pre-1.0 minor) version
+  bump.
 - Runnable examples under `examples/`: `basic_usage.rs` (standard option types
   and classification helpers), `exotic_options.rs` (Asian, Barrier, Lookback,
   Rainbow, and Bermuda variants with realistic payloads), `serde_roundtrip.rs`

@@ -2,6 +2,7 @@
 name = "option_type"
 version = "0.1.2"
 edition = "2024"
+rust-version = "1.85"
 authors = ["Joaquin Bejar <jb@taunais.com>"]
 description = "Option contract type definitions including exotic options: Asian, Barrier, Binary, Lookback, Rainbow, and more."
 license = "MIT"
