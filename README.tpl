@@ -53,7 +53,7 @@ Releases are tag-driven:
 ## Contribution and Contact
 
 We welcome contributions to this project! Please read
-[CONTRIBUTING.md](./CONTRIBUTING.md) for the full workflow — branching model,
+[CONTRIBUTING.md](https://github.com/joaquinbejar/option_type/blob/main/CONTRIBUTING.md) for the full workflow — branching model,
 the `make pre-push` check gate, commit conventions, README regeneration, and
 semver discipline — then:
 
@@ -64,7 +64,7 @@ semver discipline — then:
 5. Submit a pull request to the main repository.
 
 Found a security vulnerability? Please **do not** open a public issue — follow
-the private reporting process in [SECURITY.md](./SECURITY.md).
+the private reporting process in [SECURITY.md](https://github.com/joaquinbejar/option_type/blob/main/SECURITY.md).
 
 If you have any questions, issues, or would like to provide feedback, please feel free to contact the project maintainer:
 

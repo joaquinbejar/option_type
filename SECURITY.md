@@ -27,7 +27,7 @@ are not patched — upgrade to the latest release to stay supported.
 
 | Version | Supported |
 |---------|-----------|
-| latest published minor (`0.1.x`) | ✅ |
+| latest published minor (currently `0.1.x`) | ✅ |
 | any older minor | ❌ |
 
 ## Disclosure process
