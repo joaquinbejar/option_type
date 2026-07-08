@@ -49,3 +49,9 @@ jobs:
 
       - name: Build
         run: make build
+
+      - name: Run tests (all features)
+        run: cargo test --all-features
+
+      - name: Run tests (no default features)
+        run: cargo test --no-default-features

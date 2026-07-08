@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Integration test suite under `tests/` exercising the crate through its
+  public surface only: `serde_roundtrip.rs` (round-trip of every serializable
+  enum variant), `display.rs` (exact `Display` labels), `helpers.rs` (every
+  `is_*` classification helper against its truth table), `basic_type.rs`
+  (`OptionBasicType` construction and `Copy`/`Clone`/`Eq`/`Hash`/`Debug`
+  semantics), and `utoipa.rs` (`utoipa`-gated schema generation).
+
 ### Changed
 
 - Split `src/lib.rs` into focused modules (`option_type`, `sub_enums/*`,
