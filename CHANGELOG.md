@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `CONTRIBUTING.md` and `SECURITY.md` at the repository root. `CONTRIBUTING.md`
+  documents the branching model (`issue-<n>-<slug>` branches, one issue per PR,
+  `Closes #<n>`, merge commits), the `make pre-push` check gate, commit
+  conventions, the generated-README workflow (`make readme`), the MSRV bump
+  policy, CHANGELOG discipline, and semver rules. `SECURITY.md` documents
+  private vulnerability reporting (GitHub Security Advisories or
+  <jb@taunais.com>), the supported-versions table (latest published minor), and
+  the disclosure timeline (acknowledgment within 7 days, fix or mitigation
+  target within 90 days, coordinated disclosure). Linked both from the
+  "Contribution and Contact" section of `README.tpl` / `README.md`.
 - `cargo-readme` wiring to keep `README.md` generated from `src/lib.rs` crate
   docs + `README.tpl` instead of hand-maintained: new `make readme` target
   (regenerates `README.md`, auto-installing `cargo-readme` if absent, mirroring
