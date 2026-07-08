@@ -33,12 +33,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `release` build, and the new `doc-check` (`RUSTDOCFLAGS="-D warnings"
   cargo doc --no-deps --all-features`). It is a pure check gate — the
   auto-fix targets (`fix`, `lint-fix`) are no longer invoked by `pre-push`
-  and remain available standalone. (The CI `format_check` job still
-  auto-formats instead of checking — tracked in #21.) Split `publish` into
+  and remain available standalone. Split `publish` into
   `publish-dry` (dry-run, safe to re-run) and `publish` (real
   `cargo publish`, aborts when neither `CARGO_REGISTRY_TOKEN` nor cargo
   login credentials are available). Added a self-documenting `help` target
   listing every Make target.
+
+### Fixed
+
+- CI `format_check` job now runs `make fmt-check`
+  (`cargo +stable fmt --all --check`) instead of the auto-formatting
+  `make fmt`, so formatting drift actually fails the job.
 
 ## [0.1.2] - 2026-04-15
 
