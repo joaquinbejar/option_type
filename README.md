@@ -76,6 +76,7 @@ let barrier = OptionType::Barrier {
 assert_eq!(format!("{european}"), "European Option");
 assert!(european.is_european());
 assert!(asian.is_exotic());
+assert!(barrier.is_path_dependent());
 ```
 
 

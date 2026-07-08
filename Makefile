@@ -114,14 +114,19 @@ doc-open: ## Open generated documentation in browser
 readme: ## Regenerate README.md from src/lib.rs crate docs + README.tpl
 	@echo "📝 Regenerating README.md from crate docs..."
 	@command -v cargo-readme > /dev/null || cargo install cargo-readme --locked
-	cargo readme > README.md
+	@tmp=$$(mktemp) && \
+		{ cargo readme > "$$tmp" || { rm -f "$$tmp"; echo "❌ cargo readme failed; README.md left untouched."; exit 1; }; } && \
+		mv "$$tmp" README.md
+	@echo "✅ README.md regenerated."
 
 .PHONY: readme-check
 readme-check: ## Verify README.md is in sync with src/lib.rs crate docs + README.tpl
 	@echo "🔍 Checking README.md is in sync with crate docs..."
 	@command -v cargo-readme > /dev/null || cargo install cargo-readme --locked
-	@cargo readme | diff -q - README.md > /dev/null || \
-		(echo "❌ README.md is out of sync with src/lib.rs / README.tpl. Run 'make readme' and commit the result." && exit 1)
+	@tmp=$$(mktemp) && \
+		{ cargo readme > "$$tmp" || { rm -f "$$tmp"; echo "❌ cargo readme failed; cannot check README sync."; exit 1; }; } && \
+		{ diff -q "$$tmp" README.md > /dev/null || { rm -f "$$tmp"; echo "❌ README.md is out of sync with src/lib.rs / README.tpl. Run 'make readme' and commit the result."; exit 1; }; } && \
+		rm -f "$$tmp"
 	@echo "✅ README.md is in sync."
 
 .PHONY: publish-dry
