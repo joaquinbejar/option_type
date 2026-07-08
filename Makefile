@@ -44,8 +44,8 @@ test: ## Run all tests with all features enabled
 	RUST_LOG=warn cargo test --all-features
 
 .PHONY: test-default
-test-default: ## Run all tests with default (no) features enabled
-	@echo "🧪 Running tests with default features (no-default-features)..."
+test-default: ## Run all tests with no default features
+	@echo "🧪 Running tests with no default features..."
 	RUST_LOG=warn cargo test --no-default-features
 
 .PHONY: test-lib
@@ -88,7 +88,7 @@ check: fmt-check lint test ## Run fmt-check, lint, and test
 	@echo "✅ All checks passed!"
 
 .PHONY: pre-push
-pre-push: fmt-check lint test test-default release doc-check ## Run the full CI-equivalent gate (pure check, no auto-fixing)
+pre-push: fmt-check lint test test-default release doc-check ## Run the full pre-push check gate (pure check, no auto-fixing)
 	@echo "✅ All pre-push checks passed!"
 
 # =============================================================================
@@ -117,10 +117,12 @@ publish-dry: ## Dry-run cargo publish (no upload, safe to re-run)
 	@echo "Dry run complete. Run 'make publish' to actually publish."
 
 .PHONY: publish
-publish: ## Publish to crates.io for real (requires CARGO_REGISTRY_TOKEN)
+publish: ## Publish to crates.io for real (needs CARGO_REGISTRY_TOKEN or cargo login credentials)
 	@echo "📦 Publishing to crates.io..."
-	@if [ -z "$$CARGO_REGISTRY_TOKEN" ]; then \
-		echo "❌ CARGO_REGISTRY_TOKEN is not set in the environment. Aborting."; \
+	@if [ -z "$$CARGO_REGISTRY_TOKEN" ] \
+		&& [ ! -f "$${CARGO_HOME:-$$HOME/.cargo}/credentials.toml" ] \
+		&& [ ! -f "$${CARGO_HOME:-$$HOME/.cargo}/credentials" ]; then \
+		echo "❌ No crates.io credentials: CARGO_REGISTRY_TOKEN is unset and no cargo login credentials found. Aborting."; \
 		exit 1; \
 	fi
 	cargo publish
@@ -159,4 +161,4 @@ tag: ## Create a git tag from the version in Cargo.toml
 .PHONY: help
 help: ## Show this help message
 	@echo "Available targets:"
-	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z0-9_-]+:.*## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'

@@ -27,15 +27,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Split `src/lib.rs` into focused modules (`option_type`, `sub_enums/*`,
   `basic_type`); crate root now holds docs and re-exports only. Pure
   refactor — public API unchanged.
-- Tightened `make pre-push` to mirror the CI matrix exactly: it now runs
-  `fmt-check`, `lint`, `test` (all-features), the new `test-default`
-  (`--no-default-features`), a `release` build, and the new `doc-check`
-  (`RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --all-features`). It is a
-  pure check gate — the auto-fix targets (`fix`, `lint-fix`) are no longer
-  invoked by `pre-push` and remain available standalone. Split `publish`
-  into `publish-dry` (dry-run, safe to re-run) and `publish` (real
-  `cargo publish`, aborts if `CARGO_REGISTRY_TOKEN` is unset). Added a
-  self-documenting `help` target listing every Make target.
+- Tightened `make pre-push` into a full check gate covering the
+  pre-submission checklist: it now runs `fmt-check`, `lint`, `test`
+  (all-features), the new `test-default` (`--no-default-features`), a
+  `release` build, and the new `doc-check` (`RUSTDOCFLAGS="-D warnings"
+  cargo doc --no-deps --all-features`). It is a pure check gate — the
+  auto-fix targets (`fix`, `lint-fix`) are no longer invoked by `pre-push`
+  and remain available standalone. (The CI `format_check` job still
+  auto-formats instead of checking — tracked in #21.) Split `publish` into
+  `publish-dry` (dry-run, safe to re-run) and `publish` (real
+  `cargo publish`, aborts when neither `CARGO_REGISTRY_TOKEN` nor cargo
+  login credentials are available). Added a self-documenting `help` target
+  listing every Make target.
 
 ## [0.1.2] - 2026-04-15
 
