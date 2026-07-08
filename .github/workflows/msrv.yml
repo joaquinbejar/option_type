@@ -9,6 +9,10 @@ on:
       - main
       - 'release/**'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   CARGO_TERM_COLOR: always
   # rust-toolchain.toml pins channel = "stable" and outranks the rustup
@@ -26,17 +30,7 @@ jobs:
         uses: dtolnay/rust-toolchain@1.85
 
       - name: Cache Rust dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-msrv-${{ hashFiles('**/Cargo.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-msrv-
+        uses: Swatinem/rust-cache@v2
 
       - name: Build (all features)
         run: cargo build --all-features
