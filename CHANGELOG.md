@@ -31,6 +31,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `is_*` classification helper against its truth table), `basic_type.rs`
   (`OptionBasicType` construction and `Copy`/`Clone`/`Eq`/`Hash`/`Debug`
   semantics), and `utoipa.rs` (`utoipa`-gated schema generation).
+- Tag-driven release workflow (`.github/workflows/release.yml`), triggered on
+  `v*.*.*` tag pushes: validates the tag against the `Cargo.toml` version and
+  extracts the matching `CHANGELOG.md` section as release notes (failing
+  before any check or publish if either is missing/mismatched), runs the
+  full pre-submission checklist (`fmt --check`, `clippy -D warnings`, tests
+  with `--all-features` and `--no-default-features`, `build --release`,
+  `doc` with `RUSTDOCFLAGS=-D warnings`), then `cargo publish` to crates.io,
+  and finally creates the GitHub Release from the extracted notes. Requires
+  a `CARGO_REGISTRY_TOKEN` repository secret. Documented the release flow in
+  `README.md` / `README.tpl` under a new "Releasing" section.
 
 ### Changed
 
