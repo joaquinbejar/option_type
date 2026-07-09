@@ -9,6 +9,7 @@
 //! ```
 
 use option_type::prelude::*;
+use positive::pos_or_panic;
 
 /// Print an option's `Display` label and its exotic-classification flags.
 fn describe(option: &OptionType) {
@@ -28,8 +29,8 @@ fn main() {
     // Up-and-in barrier triggered at a level of 120.0 with a 5.0 rebate.
     let barrier = OptionType::Barrier {
         barrier_type: BarrierType::UpAndIn,
-        barrier_level: 120.0,
-        rebate: Some(5.0),
+        barrier_level: pos_or_panic!(120.0),
+        rebate: Some(pos_or_panic!(5.0)),
     };
 
     // Floating-strike lookback option.
@@ -45,7 +46,11 @@ fn main() {
 
     // Bermuda option exercisable at 30, 60, and 90 days to expiry.
     let bermuda = OptionType::Bermuda {
-        exercise_dates: vec![30.0, 60.0, 90.0],
+        exercise_dates: vec![
+            pos_or_panic!(30.0),
+            pos_or_panic!(60.0),
+            pos_or_panic!(90.0),
+        ],
     };
 
     println!("== Exotic option types ==\n");

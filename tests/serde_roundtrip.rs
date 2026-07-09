@@ -12,6 +12,7 @@
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
 use option_type::prelude::*;
+use positive::pos_or_panic;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 
@@ -42,7 +43,11 @@ fn test_serde_option_type_american_roundtrip_equals_original() {
 #[test]
 fn test_serde_option_type_bermuda_roundtrip_equals_original() {
     assert_roundtrip(&OptionType::Bermuda {
-        exercise_dates: vec![30.0, 60.0, 90.0],
+        exercise_dates: vec![
+            pos_or_panic!(30.0),
+            pos_or_panic!(60.0),
+            pos_or_panic!(90.0),
+        ],
     });
 }
 
@@ -60,12 +65,12 @@ fn test_serde_option_type_asian_roundtrip_equals_original() {
 fn test_serde_option_type_barrier_roundtrip_equals_original() {
     assert_roundtrip(&OptionType::Barrier {
         barrier_type: BarrierType::UpAndIn,
-        barrier_level: 120.0,
-        rebate: Some(5.0),
+        barrier_level: pos_or_panic!(120.0),
+        rebate: Some(pos_or_panic!(5.0)),
     });
     assert_roundtrip(&OptionType::Barrier {
         barrier_type: BarrierType::DownAndOut,
-        barrier_level: 90.0,
+        barrier_level: pos_or_panic!(90.0),
         rebate: None,
     });
 }
@@ -86,13 +91,15 @@ fn test_serde_option_type_lookback_roundtrip_equals_original() {
 
 #[test]
 fn test_serde_option_type_chooser_roundtrip_equals_original() {
-    assert_roundtrip(&OptionType::Chooser { choice_date: 30.0 });
+    assert_roundtrip(&OptionType::Chooser {
+        choice_date: pos_or_panic!(30.0),
+    });
 }
 
 #[test]
 fn test_serde_option_type_cliquet_roundtrip_equals_original() {
     assert_roundtrip(&OptionType::Cliquet {
-        reset_dates: vec![30.0, 60.0],
+        reset_dates: vec![pos_or_panic!(30.0), pos_or_panic!(60.0)],
     });
 }
 
@@ -110,24 +117,30 @@ fn test_serde_option_type_rainbow_roundtrip_equals_original() {
 
 #[test]
 fn test_serde_option_type_spread_roundtrip_equals_original() {
-    assert_roundtrip(&OptionType::Spread { second_asset: 90.0 });
+    assert_roundtrip(&OptionType::Spread {
+        second_asset: pos_or_panic!(90.0),
+    });
 }
 
 #[test]
 fn test_serde_option_type_exchange_roundtrip_equals_original() {
     assert_roundtrip(&OptionType::Exchange {
-        second_asset: 110.0,
+        second_asset: pos_or_panic!(110.0),
     });
 }
 
 #[test]
 fn test_serde_option_type_quanto_roundtrip_equals_original() {
-    assert_roundtrip(&OptionType::Quanto { exchange_rate: 1.5 });
+    assert_roundtrip(&OptionType::Quanto {
+        exchange_rate: pos_or_panic!(1.5),
+    });
 }
 
 #[test]
 fn test_serde_option_type_power_roundtrip_equals_original() {
-    assert_roundtrip(&OptionType::Power { exponent: 2.0 });
+    assert_roundtrip(&OptionType::Power {
+        exponent: pos_or_panic!(2.0),
+    });
 }
 
 #[test]
@@ -141,6 +154,61 @@ fn test_serde_option_type_compound_serialize_returns_error() {
     assert!(
         result.is_err(),
         "Compound is #[serde(skip)] and must fail to serialize, got: {result:?}"
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Negative-rejection on deserialization
+//
+// `Positive` payload fields serialize to a plain JSON number, but a negative
+// number in the wire form must be rejected on deserialization. These tests
+// serialize a valid value, confirm the positive form round-trips, then flip the
+// numeric token negative and assert the deserialization fails.
+// ---------------------------------------------------------------------------
+
+#[test]
+fn test_serde_barrier_negative_barrier_level_returns_error() {
+    let valid = OptionType::Barrier {
+        barrier_type: BarrierType::UpAndIn,
+        barrier_level: pos_or_panic!(120.0),
+        rebate: None,
+    };
+    let json = serde_json::to_string(&valid).expect("valid barrier serializes");
+    // Sanity: the positive wire form deserializes back.
+    assert!(
+        serde_json::from_str::<OptionType>(&json).is_ok(),
+        "positive barrier_level must deserialize, json: {json}"
+    );
+
+    // Flip the barrier level negative in the wire form (only `120` appears).
+    let negative_json = json.replace("120", "-120");
+    assert_ne!(negative_json, json, "the negative substitution must apply");
+    let result = serde_json::from_str::<OptionType>(&negative_json);
+    assert!(
+        result.is_err(),
+        "negative barrier_level must be rejected on deserialization, got: {result:?}"
+    );
+}
+
+#[test]
+fn test_serde_bermuda_negative_exercise_date_returns_error() {
+    let valid = OptionType::Bermuda {
+        exercise_dates: vec![pos_or_panic!(30.0)],
+    };
+    let json = serde_json::to_string(&valid).expect("valid bermuda serializes");
+    // Sanity: the positive wire form deserializes back.
+    assert!(
+        serde_json::from_str::<OptionType>(&json).is_ok(),
+        "positive exercise_dates must deserialize, json: {json}"
+    );
+
+    // Flip the single exercise date negative in the wire form.
+    let negative_json = json.replace("30", "-30");
+    assert_ne!(negative_json, json, "the negative substitution must apply");
+    let result = serde_json::from_str::<OptionType>(&negative_json);
+    assert!(
+        result.is_err(),
+        "negative exercise_date in the Vec must be rejected on deserialization, got: {result:?}"
     );
 }
 

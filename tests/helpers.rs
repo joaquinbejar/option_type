@@ -13,6 +13,7 @@
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
 use option_type::prelude::*;
+use positive::pos_or_panic;
 
 /// Expected results of the five `OptionType` classification helpers.
 struct OptionTypeExpect {
@@ -50,7 +51,7 @@ fn option_type_cases() -> Vec<(OptionType, OptionTypeExpect)> {
         ),
         (
             OptionType::Bermuda {
-                exercise_dates: vec![30.0, 60.0],
+                exercise_dates: vec![pos_or_panic!(30.0), pos_or_panic!(60.0)],
             },
             OptionTypeExpect {
                 european: false,
@@ -75,7 +76,7 @@ fn option_type_cases() -> Vec<(OptionType, OptionTypeExpect)> {
         (
             OptionType::Barrier {
                 barrier_type: BarrierType::UpAndIn,
-                barrier_level: 120.0,
+                barrier_level: pos_or_panic!(120.0),
                 rebate: None,
             },
             OptionTypeExpect {
@@ -123,7 +124,9 @@ fn option_type_cases() -> Vec<(OptionType, OptionTypeExpect)> {
             },
         ),
         (
-            OptionType::Chooser { choice_date: 30.0 },
+            OptionType::Chooser {
+                choice_date: pos_or_panic!(30.0),
+            },
             OptionTypeExpect {
                 european: false,
                 american: false,
@@ -134,7 +137,7 @@ fn option_type_cases() -> Vec<(OptionType, OptionTypeExpect)> {
         ),
         (
             OptionType::Cliquet {
-                reset_dates: vec![30.0, 60.0],
+                reset_dates: vec![pos_or_panic!(30.0), pos_or_panic!(60.0)],
             },
             OptionTypeExpect {
                 european: false,
@@ -158,7 +161,9 @@ fn option_type_cases() -> Vec<(OptionType, OptionTypeExpect)> {
             },
         ),
         (
-            OptionType::Spread { second_asset: 90.0 },
+            OptionType::Spread {
+                second_asset: pos_or_panic!(90.0),
+            },
             OptionTypeExpect {
                 european: false,
                 american: false,
@@ -168,7 +173,9 @@ fn option_type_cases() -> Vec<(OptionType, OptionTypeExpect)> {
             },
         ),
         (
-            OptionType::Quanto { exchange_rate: 1.5 },
+            OptionType::Quanto {
+                exchange_rate: pos_or_panic!(1.5),
+            },
             OptionTypeExpect {
                 european: false,
                 american: false,
@@ -179,7 +186,7 @@ fn option_type_cases() -> Vec<(OptionType, OptionTypeExpect)> {
         ),
         (
             OptionType::Exchange {
-                second_asset: 110.0,
+                second_asset: pos_or_panic!(110.0),
             },
             OptionTypeExpect {
                 european: false,
@@ -190,7 +197,9 @@ fn option_type_cases() -> Vec<(OptionType, OptionTypeExpect)> {
             },
         ),
         (
-            OptionType::Power { exponent: 2.0 },
+            OptionType::Power {
+                exponent: pos_or_panic!(2.0),
+            },
             OptionTypeExpect {
                 european: false,
                 american: false,

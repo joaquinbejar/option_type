@@ -39,6 +39,13 @@ And the lightweight [`OptionBasicType`] struct for referencing core option prope
 All leaf enums use `#[repr(u8)]` for compact memory layout.
 Pure helper methods are annotated with `#[must_use]` and `#[inline]`.
 
+Every numeric payload field on [`OptionType`] (barrier levels, rebates,
+exercise/reset dates, asset prices, exchange rates, exponents) is a
+validated [`positive::Positive`] rather than a raw `f64`, so it is
+guaranteed non-negative at construction and rejected on deserialization
+otherwise. Because no variant carries a floating-point field, [`OptionType`]
+derives `Eq` and `Hash`.
+
 ### Features
 
 - Full `serde` serialization/deserialization support
@@ -62,6 +69,7 @@ so none carries a `doc(cfg)` badge on <https://docs.rs>.
 
 ```rust
 use option_type::{OptionType, AsianAveragingType, BarrierType};
+use positive::pos_or_panic;
 
 let european = OptionType::European;
 let asian = OptionType::Asian {
@@ -69,7 +77,7 @@ let asian = OptionType::Asian {
 };
 let barrier = OptionType::Barrier {
     barrier_type: BarrierType::UpAndIn,
-    barrier_level: 120.0,
+    barrier_level: pos_or_panic!(120.0),
     rebate: None,
 };
 
@@ -92,6 +100,7 @@ wildcard (`_`) arm, so that a newly added variant does not break your build.
 
 ```rust
 use option_type::OptionType;
+use positive::pos_or_panic;
 
 fn label(option: &OptionType) -> &'static str {
     match option {
@@ -105,7 +114,7 @@ fn label(option: &OptionType) -> &'static str {
 }
 
 assert_eq!(label(&OptionType::European), "European");
-assert_eq!(label(&OptionType::Power { exponent: 2.0 }), "other");
+assert_eq!(label(&OptionType::Power { exponent: pos_or_panic!(2.0) }), "other");
 ```
 
 Constructing existing variants is unaffected — you can still build any

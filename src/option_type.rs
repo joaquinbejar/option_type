@@ -1,6 +1,7 @@
 //! The [`OptionType`] enum, its classification helpers, and its `Display` impl.
 
 use crate::sub_enums::{AsianAveragingType, BarrierType, BinaryType, LookbackType, RainbowType};
+use positive::Positive;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
@@ -18,6 +19,14 @@ use std::fmt;
 /// future minor releases, so downstream `match` expressions must include a
 /// wildcard (`_`) arm. See the crate-level docs for the recommended pattern.
 ///
+/// All numeric payload fields use [`positive::Positive`] — a validated newtype
+/// guaranteeing a non-negative decimal value — instead of raw `f64`. Because no
+/// variant carries a floating-point field, the enum can derive `Eq` and `Hash`
+/// (the recursive `Compound` variant boxes another `OptionType`); it is
+/// deliberately **not** `Copy` (the `Bermuda`/`Cliquet` `Vec` and `Compound`
+/// `Box` payloads are heap-backed) and does **not** derive `Ord` (there is no
+/// meaningful total order across option families).
+///
 /// # Examples
 ///
 /// ```rust
@@ -27,7 +36,7 @@ use std::fmt;
 /// assert!(opt.is_european());
 /// assert!(!opt.is_exotic());
 /// ```
-#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 #[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[non_exhaustive]
 pub enum OptionType {
@@ -47,8 +56,9 @@ pub enum OptionType {
     /// (e.g., monthly or quarterly).
     Bermuda {
         /// The specific dates (in days to expiry) on which the option can be
-        /// exercised before expiry.
-        exercise_dates: Vec<f64>,
+        /// exercised before expiry. Each entry is a [`Positive`], so every
+        /// date is guaranteed non-negative.
+        exercise_dates: Vec<Positive>,
     },
 
     /// An Asian option whose payoff depends on the average price of the
@@ -64,10 +74,13 @@ pub enum OptionType {
         /// The type of barrier that triggers the option's activation or deactivation.
         barrier_type: BarrierType,
         /// The price level that the underlying asset must reach for the barrier
-        /// to be triggered.
-        barrier_level: f64,
+        /// to be triggered. A [`Positive`], so the level is guaranteed
+        /// non-negative.
+        barrier_level: Positive,
         /// The amount paid to the option holder if the option is knocked out.
-        rebate: Option<f64>,
+        /// When present, it is a [`Positive`], guaranteeing a non-negative
+        /// rebate.
+        rebate: Option<Positive>,
     },
 
     /// A Binary option that provides a fixed payoff if the underlying asset is
@@ -97,14 +110,17 @@ pub enum OptionType {
     /// whether the option will be a call or a put.
     Chooser {
         /// The date (in days to expiry) on which the holder must choose
-        /// whether the option becomes a call or a put.
-        choice_date: f64,
+        /// whether the option becomes a call or a put. A [`Positive`], so the
+        /// date is guaranteed non-negative.
+        choice_date: Positive,
     },
 
     /// A Cliquet (ratchet) option that resets its strike price at certain dates.
     Cliquet {
         /// The dates (in days to expiry) on which the strike price is reset.
-        reset_dates: Vec<f64>,
+        /// Each entry is a [`Positive`], so every date is guaranteed
+        /// non-negative.
+        reset_dates: Vec<Positive>,
     },
 
     /// A Rainbow option based on the performance of two or more underlying assets.
@@ -118,30 +134,34 @@ pub enum OptionType {
     /// A Spread option based on the difference between the prices of two
     /// underlying assets.
     Spread {
-        /// The price of the second asset involved in the spread.
-        second_asset: f64,
+        /// The price of the second asset involved in the spread. A
+        /// [`Positive`], so the price is guaranteed non-negative.
+        second_asset: Positive,
     },
 
     /// A Quanto option whose payoff depends on the underlying asset price in
     /// one currency, but the payoff is made in another currency at a fixed
     /// exchange rate.
     Quanto {
-        /// The fixed exchange rate at which the payoff is converted.
-        exchange_rate: f64,
+        /// The fixed exchange rate at which the payoff is converted. A
+        /// [`Positive`], so the rate is guaranteed non-negative.
+        exchange_rate: Positive,
     },
 
     /// An Exchange option giving the holder the right to exchange one asset
     /// for another.
     Exchange {
-        /// The price of the second asset involved in the exchange.
-        second_asset: f64,
+        /// The price of the second asset involved in the exchange. A
+        /// [`Positive`], so the price is guaranteed non-negative.
+        second_asset: Positive,
     },
 
     /// A Power option whose payoff is based on the underlying asset price
     /// raised to a certain power.
     Power {
-        /// The exponent to which the underlying asset price is raised.
-        exponent: f64,
+        /// The exponent to which the underlying asset price is raised. A
+        /// [`Positive`], so the exponent is guaranteed non-negative.
+        exponent: Positive,
     },
 }
 
@@ -259,6 +279,7 @@ impl fmt::Display for OptionType {
 #[allow(clippy::unwrap_used, clippy::panic, clippy::expect_used)]
 mod tests {
     use super::*;
+    use positive::pos_or_panic;
 
     #[test]
     fn test_default() {
@@ -269,7 +290,12 @@ mod tests {
     fn test_is_european() {
         assert!(OptionType::European.is_european());
         assert!(!OptionType::American.is_european());
-        assert!(!OptionType::Power { exponent: 2.0 }.is_european());
+        assert!(
+            !OptionType::Power {
+                exponent: pos_or_panic!(2.0)
+            }
+            .is_european()
+        );
     }
 
     #[test]
@@ -288,10 +314,15 @@ mod tests {
             }
             .is_exotic()
         );
-        assert!(OptionType::Power { exponent: 2.0 }.is_exotic());
+        assert!(
+            OptionType::Power {
+                exponent: pos_or_panic!(2.0)
+            }
+            .is_exotic()
+        );
         assert!(
             OptionType::Bermuda {
-                exercise_dates: vec![30.0]
+                exercise_dates: vec![pos_or_panic!(30.0)]
             }
             .is_exotic()
         );
@@ -308,7 +339,7 @@ mod tests {
         assert!(
             OptionType::Barrier {
                 barrier_type: BarrierType::UpAndIn,
-                barrier_level: 120.0,
+                barrier_level: pos_or_panic!(120.0),
                 rebate: None,
             }
             .is_path_dependent()
@@ -321,12 +352,17 @@ mod tests {
         );
         assert!(
             OptionType::Cliquet {
-                reset_dates: vec![30.0]
+                reset_dates: vec![pos_or_panic!(30.0)]
             }
             .is_path_dependent()
         );
         assert!(!OptionType::European.is_path_dependent());
-        assert!(!OptionType::Power { exponent: 2.0 }.is_path_dependent());
+        assert!(
+            !OptionType::Power {
+                exponent: pos_or_panic!(2.0)
+            }
+            .is_path_dependent()
+        );
     }
 
     #[test]
@@ -338,15 +374,25 @@ mod tests {
             }
             .is_multi_asset()
         );
-        assert!(OptionType::Spread { second_asset: 90.0 }.is_multi_asset());
+        assert!(
+            OptionType::Spread {
+                second_asset: pos_or_panic!(90.0)
+            }
+            .is_multi_asset()
+        );
         assert!(
             OptionType::Exchange {
-                second_asset: 110.0
+                second_asset: pos_or_panic!(110.0)
             }
             .is_multi_asset()
         );
         assert!(!OptionType::European.is_multi_asset());
-        assert!(!OptionType::Quanto { exchange_rate: 1.5 }.is_multi_asset());
+        assert!(
+            !OptionType::Quanto {
+                exchange_rate: pos_or_panic!(1.5)
+            }
+            .is_multi_asset()
+        );
     }
 
     #[test]
@@ -362,7 +408,11 @@ mod tests {
     #[test]
     fn test_display_bermuda() {
         let opt = OptionType::Bermuda {
-            exercise_dates: vec![30.0, 60.0, 90.0],
+            exercise_dates: vec![
+                pos_or_panic!(30.0),
+                pos_or_panic!(60.0),
+                pos_or_panic!(90.0),
+            ],
         };
         assert!(format!("{opt}").contains("Bermuda"));
     }
@@ -380,8 +430,8 @@ mod tests {
     fn test_display_barrier() {
         let opt = OptionType::Barrier {
             barrier_type: BarrierType::UpAndIn,
-            barrier_level: 120.0,
-            rebate: Some(5.0),
+            barrier_level: pos_or_panic!(120.0),
+            rebate: Some(pos_or_panic!(5.0)),
         };
         let display = format!("{opt}");
         assert!(display.contains("Barrier"));
@@ -414,14 +464,16 @@ mod tests {
 
     #[test]
     fn test_display_chooser() {
-        let opt = OptionType::Chooser { choice_date: 30.0 };
+        let opt = OptionType::Chooser {
+            choice_date: pos_or_panic!(30.0),
+        };
         assert!(format!("{opt}").contains("Chooser"));
     }
 
     #[test]
     fn test_display_cliquet() {
         let opt = OptionType::Cliquet {
-            reset_dates: vec![30.0, 60.0],
+            reset_dates: vec![pos_or_panic!(30.0), pos_or_panic!(60.0)],
         };
         assert!(format!("{opt}").contains("Cliquet"));
     }
@@ -437,27 +489,33 @@ mod tests {
 
     #[test]
     fn test_display_spread() {
-        let opt = OptionType::Spread { second_asset: 90.0 };
+        let opt = OptionType::Spread {
+            second_asset: pos_or_panic!(90.0),
+        };
         assert!(format!("{opt}").contains("Spread"));
     }
 
     #[test]
     fn test_display_quanto() {
-        let opt = OptionType::Quanto { exchange_rate: 1.5 };
+        let opt = OptionType::Quanto {
+            exchange_rate: pos_or_panic!(1.5),
+        };
         assert!(format!("{opt}").contains("Quanto"));
     }
 
     #[test]
     fn test_display_exchange() {
         let opt = OptionType::Exchange {
-            second_asset: 110.0,
+            second_asset: pos_or_panic!(110.0),
         };
         assert!(format!("{opt}").contains("Exchange"));
     }
 
     #[test]
     fn test_display_power() {
-        let opt = OptionType::Power { exponent: 2.0 };
+        let opt = OptionType::Power {
+            exponent: pos_or_panic!(2.0),
+        };
         assert!(format!("{opt}").contains("Power"));
     }
 
@@ -492,7 +550,7 @@ mod tests {
     fn test_serialization_barrier() {
         let opt = OptionType::Barrier {
             barrier_type: BarrierType::DownAndOut,
-            barrier_level: 90.0,
+            barrier_level: pos_or_panic!(90.0),
             rebate: None,
         };
         let json = serde_json::to_string(&opt).unwrap();
