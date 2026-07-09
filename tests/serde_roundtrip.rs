@@ -10,6 +10,9 @@
 //! round-tripped.
 
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
+// `serde_json::Value` indexing in the negative-rejection tests is intentional:
+// a panic there means the wire shape changed and the test must be updated.
+#![allow(clippy::indexing_slicing)]
 
 use option_type::prelude::*;
 use positive::pos_or_panic;
