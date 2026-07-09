@@ -94,6 +94,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **BREAKING:** Every public enum is now `#[non_exhaustive]` — [`OptionType`]
+  and the five leaf sub-enums (`AsianAveragingType`, `BarrierType`,
+  `BinaryType`, `LookbackType`, `RainbowType`). This lets future variant
+  additions ship as **minor** version bumps instead of major ones. Constructing
+  existing variants is unaffected; the impact is on downstream `match`
+  statements, which must now include a wildcard (`_`) arm. Migration — add a
+  wildcard arm to any exhaustive match:
+
+  ```rust
+  // Before (0.1.x) — exhaustive match compiled fine:
+  match option {
+      OptionType::European => { /* ... */ }
+      OptionType::American => { /* ... */ }
+      // ... every remaining variant enumerated ...
+  }
+
+  // After (0.2.0) — add a wildcard arm:
+  match option {
+      OptionType::European => { /* ... */ }
+      OptionType::American => { /* ... */ }
+      _ => { /* handle current and future variants */ }
+  }
+  ```
+
 - The `financial_types`, `positive`, and `expiration_date` dependencies no
   longer enable their `utoipa` feature unconditionally — it is now activated
   only through this crate's `utoipa` feature, matching the documented feature

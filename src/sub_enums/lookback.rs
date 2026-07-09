@@ -19,6 +19,7 @@ use std::fmt;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[repr(u8)]
+#[non_exhaustive]
 pub enum LookbackType {
     /// The strike price is fixed at the beginning, and the payoff is based on
     /// the maximum or minimum price of the underlying asset during the option's life.

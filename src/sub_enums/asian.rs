@@ -16,6 +16,7 @@ use std::fmt;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[repr(u8)]
+#[non_exhaustive]
 pub enum AsianAveragingType {
     /// Arithmetic averaging sums all observed prices and divides by the number
     /// of observations.
