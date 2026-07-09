@@ -77,7 +77,11 @@ fn bench_to_string(c: &mut Criterion) {
     let mut g = c.benchmark_group("serde/to_string");
     for (name, variant) in &variants {
         g.bench_function(*name, |b| {
-            b.iter(|| black_box(serde_json::to_string(black_box(variant))))
+            b.iter(|| {
+                black_box(
+                    serde_json::to_string(black_box(variant)).expect("bench variant serializes"),
+                )
+            })
         });
     }
     g.finish();
@@ -97,7 +101,12 @@ fn bench_from_str(c: &mut Criterion) {
     let mut g = c.benchmark_group("serde/from_str");
     for (name, json) in &encoded {
         g.bench_function(*name, |b| {
-            b.iter(|| black_box(serde_json::from_str::<OptionType>(black_box(json))))
+            b.iter(|| {
+                black_box(
+                    serde_json::from_str::<OptionType>(black_box(json))
+                        .expect("bench JSON deserializes"),
+                )
+            })
         });
     }
     g.finish();
