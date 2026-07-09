@@ -18,6 +18,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 #[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[repr(u8)]
+#[non_exhaustive]
 pub enum RainbowType {
     /// Option on the maximum of multiple assets.
     /// Call payoff: max(max(S1, S2, ..., Sn) - K, 0)

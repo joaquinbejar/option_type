@@ -17,6 +17,7 @@ use std::fmt;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[repr(u8)]
+#[non_exhaustive]
 pub enum BinaryType {
     /// The option pays a fixed amount of cash if the underlying asset is above
     /// or below a certain level.

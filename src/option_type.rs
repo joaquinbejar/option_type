@@ -14,6 +14,10 @@ use std::fmt;
 /// data fields. Leaf sub-enums (`BarrierType`, `BinaryType`, etc.) do use
 /// `#[repr(u8)]`.
 ///
+/// This enum is `#[non_exhaustive]` (as of 0.2.0): new variants may be added in
+/// future minor releases, so downstream `match` expressions must include a
+/// wildcard (`_`) arm. See the crate-level docs for the recommended pattern.
+///
 /// # Examples
 ///
 /// ```rust
@@ -25,6 +29,7 @@ use std::fmt;
 /// ```
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 #[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
+#[non_exhaustive]
 pub enum OptionType {
     /// A European option can only be exercised at the expiry date.
     /// European options are simpler to price and analyze because their payoff

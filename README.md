@@ -79,6 +79,38 @@ assert!(asian.is_exotic());
 assert!(barrier.is_path_dependent());
 ```
 
+### Non-exhaustive enums
+
+As of **0.2.0**, every public enum in this crate — [`OptionType`] and the
+five leaf sub-enums ([`AsianAveragingType`], [`BarrierType`], [`BinaryType`],
+[`LookbackType`], [`RainbowType`]) — is annotated `#[non_exhaustive]`.
+
+This lets the crate add new option families and sub-type variants in future
+**minor** releases without a breaking major bump. The trade-off is on the
+consumer side: an exhaustive `match` on any of these enums must include a
+wildcard (`_`) arm, so that a newly added variant does not break your build.
+
+```rust
+use option_type::OptionType;
+
+fn label(option: &OptionType) -> &'static str {
+    match option {
+        OptionType::European => "European",
+        OptionType::American => "American",
+        // Required: `OptionType` is `#[non_exhaustive]`, so new variants
+        // may appear in a minor release. The wildcard keeps downstream
+        // matches compiling across those additions.
+        _ => "other",
+    }
+}
+
+assert_eq!(label(&OptionType::European), "European");
+assert_eq!(label(&OptionType::Power { exponent: 2.0 }), "other");
+```
+
+Constructing existing variants is unaffected — you can still build any
+variant with its normal literal syntax.
+
 
 ## Examples
 
