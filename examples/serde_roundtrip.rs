@@ -13,6 +13,7 @@
 #![allow(clippy::unwrap_used, clippy::expect_used)]
 
 use option_type::prelude::*;
+use positive::pos_or_panic;
 
 /// Serialize `option` to JSON, deserialize it back, and print both the JSON
 /// and whether the round-trip preserved the value.
@@ -41,7 +42,7 @@ fn main() {
         "Barrier (DownAndOut)",
         &OptionType::Barrier {
             barrier_type: BarrierType::DownAndOut,
-            barrier_level: 90.0,
+            barrier_level: pos_or_panic!(90.0),
             rebate: None,
         },
     );
@@ -67,8 +68,17 @@ fn main() {
     roundtrip(
         "Bermuda",
         &OptionType::Bermuda {
-            exercise_dates: vec![30.0, 60.0, 90.0],
+            exercise_dates: vec![
+                pos_or_panic!(30.0),
+                pos_or_panic!(60.0),
+                pos_or_panic!(90.0),
+            ],
         },
     );
-    roundtrip("Power", &OptionType::Power { exponent: 2.0 });
+    roundtrip(
+        "Power",
+        &OptionType::Power {
+            exponent: pos_or_panic!(2.0),
+        },
+    );
 }

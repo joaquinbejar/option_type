@@ -20,6 +20,7 @@ use std::hint::black_box;
 
 use criterion::{Criterion, criterion_group, criterion_main};
 use option_type::{AsianAveragingType, BarrierType, OptionType, RainbowType};
+use positive::pos_or_panic;
 
 fn bench_option_type(c: &mut Criterion) {
     let european = OptionType::European;
@@ -29,8 +30,8 @@ fn bench_option_type(c: &mut Criterion) {
     };
     let barrier = OptionType::Barrier {
         barrier_type: BarrierType::UpAndIn,
-        barrier_level: 120.0,
-        rebate: Some(5.0),
+        barrier_level: pos_or_panic!(120.0),
+        rebate: Some(pos_or_panic!(5.0)),
     };
     let rainbow = OptionType::Rainbow {
         num_assets: 3,

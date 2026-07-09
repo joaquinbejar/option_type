@@ -11,6 +11,7 @@
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
 use option_type::prelude::*;
+use positive::pos_or_panic;
 
 // ---------------------------------------------------------------------------
 // OptionType
@@ -29,11 +30,15 @@ fn test_display_option_type_american_matches_label() {
 #[test]
 fn test_display_option_type_bermuda_matches_label() {
     let opt = OptionType::Bermuda {
-        exercise_dates: vec![30.0, 60.0, 90.0],
+        exercise_dates: vec![
+            pos_or_panic!(30.0),
+            pos_or_panic!(60.0),
+            pos_or_panic!(90.0),
+        ],
     };
     assert_eq!(
         format!("{opt}"),
-        "Bermuda Option (Exercise Dates: [30.0, 60.0, 90.0])"
+        "Bermuda Option (Exercise Dates: [30, 60, 90])"
     );
 }
 
@@ -60,17 +65,17 @@ fn test_display_option_type_asian_matches_label() {
 fn test_display_option_type_barrier_matches_label() {
     let with_rebate = OptionType::Barrier {
         barrier_type: BarrierType::UpAndIn,
-        barrier_level: 120.0,
-        rebate: Some(5.0),
+        barrier_level: pos_or_panic!(120.0),
+        rebate: Some(pos_or_panic!(5.0)),
     };
     assert_eq!(
         format!("{with_rebate}"),
-        "Barrier Option (Type: Up-And-In Barrier, Level: 120, Rebate: Some(5.0))"
+        "Barrier Option (Type: Up-And-In Barrier, Level: 120, Rebate: Some(5))"
     );
 
     let without_rebate = OptionType::Barrier {
         barrier_type: BarrierType::DownAndOut,
-        barrier_level: 90.0,
+        barrier_level: pos_or_panic!(90.0),
         rebate: None,
     };
     assert_eq!(
@@ -114,19 +119,18 @@ fn test_display_option_type_compound_matches_label() {
 
 #[test]
 fn test_display_option_type_chooser_matches_label() {
-    let opt = OptionType::Chooser { choice_date: 30.0 };
+    let opt = OptionType::Chooser {
+        choice_date: pos_or_panic!(30.0),
+    };
     assert_eq!(format!("{opt}"), "Chooser Option (Choice Date: 30)");
 }
 
 #[test]
 fn test_display_option_type_cliquet_matches_label() {
     let opt = OptionType::Cliquet {
-        reset_dates: vec![30.0, 60.0],
+        reset_dates: vec![pos_or_panic!(30.0), pos_or_panic!(60.0)],
     };
-    assert_eq!(
-        format!("{opt}"),
-        "Cliquet Option (Reset Dates: [30.0, 60.0])"
-    );
+    assert_eq!(format!("{opt}"), "Cliquet Option (Reset Dates: [30, 60])");
 }
 
 #[test]
@@ -152,27 +156,33 @@ fn test_display_option_type_rainbow_matches_label() {
 
 #[test]
 fn test_display_option_type_spread_matches_label() {
-    let opt = OptionType::Spread { second_asset: 90.0 };
+    let opt = OptionType::Spread {
+        second_asset: pos_or_panic!(90.0),
+    };
     assert_eq!(format!("{opt}"), "Spread Option (Second Asset: 90)");
 }
 
 #[test]
 fn test_display_option_type_quanto_matches_label() {
-    let opt = OptionType::Quanto { exchange_rate: 1.5 };
+    let opt = OptionType::Quanto {
+        exchange_rate: pos_or_panic!(1.5),
+    };
     assert_eq!(format!("{opt}"), "Quanto Option (Exchange Rate: 1.5)");
 }
 
 #[test]
 fn test_display_option_type_exchange_matches_label() {
     let opt = OptionType::Exchange {
-        second_asset: 110.0,
+        second_asset: pos_or_panic!(110.0),
     };
     assert_eq!(format!("{opt}"), "Exchange Option (Second Asset: 110)");
 }
 
 #[test]
 fn test_display_option_type_power_matches_label() {
-    let opt = OptionType::Power { exponent: 2.0 };
+    let opt = OptionType::Power {
+        exponent: pos_or_panic!(2.0),
+    };
     assert_eq!(format!("{opt}"), "Power Option (Exponent: 2)");
 }
 

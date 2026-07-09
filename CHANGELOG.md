@@ -94,6 +94,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **BREAKING:** Every numeric payload field on `OptionType` now uses the
+  validated [`positive::Positive`] newtype instead of a raw `f64`, so each is
+  guaranteed non-negative at construction. All nine fields migrated:
+
+  | Variant.field | Old type | New type |
+  |---|---|---|
+  | `Bermuda.exercise_dates` | `Vec<f64>` | `Vec<Positive>` |
+  | `Barrier.barrier_level` | `f64` | `Positive` |
+  | `Barrier.rebate` | `Option<f64>` | `Option<Positive>` |
+  | `Chooser.choice_date` | `f64` | `Positive` |
+  | `Cliquet.reset_dates` | `Vec<f64>` | `Vec<Positive>` |
+  | `Spread.second_asset` | `f64` | `Positive` |
+  | `Exchange.second_asset` | `f64` | `Positive` |
+  | `Quanto.exchange_rate` | `f64` | `Positive` |
+  | `Power.exponent` | `f64` | `Positive` |
+
+  The JSON wire shape is unchanged — every field still serializes to a plain
+  JSON number — but a negative number is now **rejected at deserialization**
+  (previously any `f64` was accepted). Non-self-describing binary formats
+  (e.g. bincode) do see a different byte layout. Construct values with `positive`'s
+  `pos!`/`pos_or_panic!`/`spos!` macros or `Positive::new`. As an additive
+  bonus, with no floating-point field remaining `OptionType` now also derives
+  `Eq` and `Hash` (it remains non-`Copy` due to the `Vec`/`Box` payloads and
+  does not derive `Ord`). `Display` output for the affected variants changes
+  where `f64` formatting differed from `Positive` (which normalizes decimals):
+  e.g. `Some(5.0)` → `Some(5)` for `Barrier` rebates and
+  `[30.0, 60.0, 90.0]` → `[30, 60, 90]` for `Bermuda`/`Cliquet` date lists.
+
 - **BREAKING:** Every public enum is now `#[non_exhaustive]` — [`OptionType`]
   and the five leaf sub-enums (`AsianAveragingType`, `BarrierType`,
   `BinaryType`, `LookbackType`, `RainbowType`). This lets future variant

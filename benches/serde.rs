@@ -23,6 +23,7 @@ use std::hint::black_box;
 
 use criterion::{Criterion, criterion_group, criterion_main};
 use option_type::{AsianAveragingType, BarrierType, BinaryType, OptionType, RainbowType};
+use positive::pos_or_panic;
 
 /// Builds the representative variant set covering every serializable family.
 fn variants() -> Vec<(&'static str, OptionType)> {
@@ -38,14 +39,19 @@ fn variants() -> Vec<(&'static str, OptionType)> {
             "barrier",
             OptionType::Barrier {
                 barrier_type: BarrierType::UpAndIn,
-                barrier_level: 120.0,
-                rebate: Some(5.0),
+                barrier_level: pos_or_panic!(120.0),
+                rebate: Some(pos_or_panic!(5.0)),
             },
         ),
         (
             "cliquet",
             OptionType::Cliquet {
-                reset_dates: vec![30.0, 60.0, 90.0, 120.0],
+                reset_dates: vec![
+                    pos_or_panic!(30.0),
+                    pos_or_panic!(60.0),
+                    pos_or_panic!(90.0),
+                    pos_or_panic!(120.0),
+                ],
             },
         ),
         (
@@ -55,11 +61,21 @@ fn variants() -> Vec<(&'static str, OptionType)> {
                 rainbow_type: RainbowType::WorstOf,
             },
         ),
-        ("spread", OptionType::Spread { second_asset: 90.0 }),
+        (
+            "spread",
+            OptionType::Spread {
+                second_asset: pos_or_panic!(90.0),
+            },
+        ),
         (
             "bermuda",
             OptionType::Bermuda {
-                exercise_dates: vec![30.0, 60.0, 90.0, 120.0],
+                exercise_dates: vec![
+                    pos_or_panic!(30.0),
+                    pos_or_panic!(60.0),
+                    pos_or_panic!(90.0),
+                    pos_or_panic!(120.0),
+                ],
             },
         ),
         (
@@ -68,7 +84,12 @@ fn variants() -> Vec<(&'static str, OptionType)> {
                 binary_type: BinaryType::CashOrNothing,
             },
         ),
-        ("power", OptionType::Power { exponent: 2.0 }),
+        (
+            "power",
+            OptionType::Power {
+                exponent: pos_or_panic!(2.0),
+            },
+        ),
     ]
 }
 
