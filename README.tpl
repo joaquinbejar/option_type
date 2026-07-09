@@ -27,6 +27,32 @@ self-explanatory walkthrough of one part of the API:
 | `option_basic_type` | Assemble an `OptionBasicType` from `OptionStyle`, `Side`, `Positive`, and `ExpirationDate`, printing its borrowed fields | `cargo run --example option_basic_type` |
 
 
+## Benchmarks
+
+The crate ships a [criterion](https://crates.io/crates/criterion) harness under
+[`benches/`](./benches), grouped into three benchmark files:
+
+| Bench | Covers |
+|---|---|
+| `classification` | Every branch-free `is_*` helper on `OptionType`, `BarrierType`, `AsianAveragingType`, and `RainbowType` |
+| `display` | `Display` (`to_string`) rendering for representative variants, including payload-carrying `Barrier`, `Bermuda`, and `Rainbow` |
+| `serde` | `serde_json` `to_string` / `from_str` round-trips per serializable variant family |
+
+Run the full suite with:
+
+```bash
+make bench          # or: cargo bench
+```
+
+To track performance across changes, save a criterion baseline and compare
+against it later (using the current version as the baseline name):
+
+```bash
+cargo bench -- --save-baseline v0.1.2   # record a baseline
+cargo bench -- --baseline v0.1.2        # compare against it
+```
+
+
 ## MSRV
 
 The Minimum Supported Rust Version (MSRV) is **1.85** (required by `edition = "2024"`
