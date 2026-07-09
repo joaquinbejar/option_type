@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Criterion benchmark harness under `benches/` (dev-only; `criterion` `0.5`
+  with the `html_reports` feature added as a dev-dependency, so it never leaks
+  into the published dependency tree). Three `harness = false` bench targets:
+  `classification.rs` (every branch-free `is_*` helper — 5 on `OptionType`,
+  4 on `BarrierType`, 2 on `AsianAveragingType`, 2 on `RainbowType`),
+  `display.rs` (`Display`/`to_string` rendering for representative variants,
+  including the payload-carrying `Barrier`, `Bermuda`, and `Rainbow`), and
+  `serde.rs` (`serde_json` `to_string`/`from_str` round-trips per serializable
+  variant family; `Compound` is omitted as it is `#[serde(skip)]`). Every input
+  is `black_box`ed. A `make bench` target runs the suite, and the README
+  documents the criterion baseline workflow (`--save-baseline` / `--baseline`).
 - Coverage threshold gate via `codecov.yml`: project coverage target 80%
   with a 2-percentage-point drop tolerance, and 80% patch coverage for
   new/changed lines. PR comments require changed coverage. The policy is

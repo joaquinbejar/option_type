@@ -83,6 +83,11 @@ fix: ## Apply cargo fix suggestions
 	@echo "🔧 Applying cargo fix suggestions..."
 	cargo fix --allow-staged --allow-dirty
 
+.PHONY: bench
+bench: ## Run criterion benchmarks (classification, display, serde)
+	@echo "📈 Running benchmarks..."
+	cargo bench
+
 .PHONY: check
 check: fmt-check lint test ## Run fmt-check, lint, and test
 	@echo "✅ All checks passed!"

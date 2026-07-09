@@ -33,11 +33,30 @@ serde = { version = "1.0", features = ["derive"] }
 utoipa = { version = "5.4", optional = true }
 
 [dev-dependencies]
+# `html_reports` mirrors the `positive` crate's declaration and lets
+# `cargo bench` emit local HTML reports for the criterion baseline workflow
+# (`--save-baseline` / `--baseline`) documented in the README.
+criterion = { version = "0.5", features = ["html_reports"] }
 serde_json = { version = "1.0" }
 
 [lib]
 name = "option_type"
 path = "src/lib.rs"
+
+[[bench]]
+name = "classification"
+path = "benches/classification.rs"
+harness = false
+
+[[bench]]
+name = "display"
+path = "benches/display.rs"
+harness = false
+
+[[bench]]
+name = "serde"
+path = "benches/serde.rs"
+harness = false
 
 [lints.rust]
 unsafe_code = "deny"
