@@ -180,9 +180,10 @@ fn test_serde_barrier_negative_barrier_level_returns_error() {
         "positive barrier_level must deserialize, json: {json}"
     );
 
-    // Flip the barrier level negative in the wire form (only `120` appears).
-    let negative_json = json.replace("120", "-120");
-    assert_ne!(negative_json, json, "the negative substitution must apply");
+    // Flip exactly `Barrier.barrier_level` negative in the parsed wire form.
+    let mut value: serde_json::Value = serde_json::from_str(&json).expect("wire form parses");
+    value["Barrier"]["barrier_level"] = serde_json::json!(-120.0);
+    let negative_json = serde_json::to_string(&value).expect("mutated value serializes");
     let result = serde_json::from_str::<OptionType>(&negative_json);
     assert!(
         result.is_err(),
@@ -202,9 +203,10 @@ fn test_serde_bermuda_negative_exercise_date_returns_error() {
         "positive exercise_dates must deserialize, json: {json}"
     );
 
-    // Flip the single exercise date negative in the wire form.
-    let negative_json = json.replace("30", "-30");
-    assert_ne!(negative_json, json, "the negative substitution must apply");
+    // Flip exactly `Bermuda.exercise_dates[0]` negative in the parsed wire form.
+    let mut value: serde_json::Value = serde_json::from_str(&json).expect("wire form parses");
+    value["Bermuda"]["exercise_dates"][0] = serde_json::json!(-30.0);
+    let negative_json = serde_json::to_string(&value).expect("mutated value serializes");
     let result = serde_json::from_str::<OptionType>(&negative_json);
     assert!(
         result.is_err(),
