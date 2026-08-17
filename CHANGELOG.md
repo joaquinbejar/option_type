@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-08-17
+
+### Changed — breaking
+
+- `positive` 0.5 → 0.6 and `expiration_date` 0.2 → 0.3. Both appear in this
+  crate's public API (`Positive` payloads on `Barrier`, `Bermuda`, `Rainbow`
+  and friends; `ExpirationDate` on the exercise-date variants), so consumers
+  must move to the same majors in one step. `positive` 0.6 is itself a
+  breaking release: `ln`/`log10` return `Decimal`, serde emits the exact
+  decimal as a string (`"42.5"` instead of `42.5`, old numeric documents
+  still deserialise), `==` against `Decimal`/`f64` is exact rather than
+  epsilon-based, and `PositiveError::Other` plus `new_unchecked` are gone.
+- MSRV raised from 1.85 to 1.86, required by `expiration_date` 0.3. The
+  `msrv` workflow now pins 1.86.
+
+### Changed
+
+- `utoipa` 5.4 → 5.5 and `criterion` 0.5 → 0.8 (dev-only). Every other
+  dependency was already at its latest stable minor.
+
+### Housekeeping
+
+- `.cargo/audit.toml`, mirroring the `positive` crate's policy file: it ignores
+  RUSTSEC-2026-0235 (rkyv 0.7.46) with a reachability rationale — `rkyv` is an
+  *optional* dependency of `rust_decimal`, reached only transitively through
+  `positive` and `expiration_date`, and neither enables that feature, so it is
+  recorded in `Cargo.lock` but never compiled (`cargo tree --all-features
+  --target all -i rkyv` reports nothing) — and opts into failing on
+  unmaintained/unsound/notice advisories. The entry has an owner and a
+  2027-02-15 review date.
+
 ## [0.2.0] - 2026-07-09
 
 ### Added
