@@ -27,6 +27,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `utoipa` 5.4 → 5.5 and `criterion` 0.5 → 0.8 (dev-only). Every other
   dependency was already at its latest stable minor.
 
+### Housekeeping
+
+- `.cargo/audit.toml`, mirroring the `positive` crate's policy file: it ignores
+  RUSTSEC-2026-0235 (rkyv 0.7.46) with a reachability rationale — `rkyv` is an
+  *optional* dependency of `rust_decimal`, reached only transitively through
+  `positive` and `expiration_date`, and neither enables that feature, so it is
+  recorded in `Cargo.lock` but never compiled (`cargo tree --all-features
+  --target all -i rkyv` reports nothing) — and opts into failing on
+  unmaintained/unsound/notice advisories. The entry has an owner and a
+  2027-02-15 review date.
+
 ## [0.2.0] - 2026-07-09
 
 ### Added
