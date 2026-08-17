@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-08-17
+
+### Changed — breaking
+
+- `positive` 0.5 → 0.6 and `expiration_date` 0.2 → 0.3. Both appear in this
+  crate's public API (`Positive` payloads on `Barrier`, `Bermuda`, `Rainbow`
+  and friends; `ExpirationDate` on the exercise-date variants), so consumers
+  must move to the same majors in one step. `positive` 0.6 is itself a
+  breaking release: `ln`/`log10` return `Decimal`, serde emits the exact
+  decimal as a string (`"42.5"` instead of `42.5`, old numeric documents
+  still deserialise), `==` against `Decimal`/`f64` is exact rather than
+  epsilon-based, and `PositiveError::Other` plus `new_unchecked` are gone.
+- MSRV raised from 1.85 to 1.86, required by `expiration_date` 0.3. The
+  `msrv` workflow now pins 1.86.
+
+### Changed
+
+- `utoipa` 5.4 → 5.5 and `criterion` 0.5 → 0.8 (dev-only). Every other
+  dependency was already at its latest stable minor.
+
 ## [0.2.0] - 2026-07-09
 
 ### Added

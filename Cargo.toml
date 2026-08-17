@@ -1,8 +1,8 @@
 [package]
 name = "option_type"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
-rust-version = "1.85"
+rust-version = "1.86"
 authors = ["Joaquin Bejar <jb@taunais.com>"]
 description = "Option contract type definitions including exotic options: Asian, Barrier, Binary, Lookback, Rainbow, and more."
 license = "MIT"
@@ -27,16 +27,16 @@ utoipa = ["dep:utoipa", "financial_types/utoipa", "positive/utoipa", "expiration
 
 [dependencies]
 financial_types = { version = "0.2" }
-positive = { version = "0.5" }
-expiration_date = { version = "0.2" }
+positive = { version = "0.6" }
+expiration_date = { version = "0.3" }
 serde = { version = "1.0", features = ["derive"] }
-utoipa = { version = "5.4", optional = true }
+utoipa = { version = "5.5", optional = true }
 
 [dev-dependencies]
 # `html_reports` mirrors the `positive` crate's declaration and lets
 # `cargo bench` emit local HTML reports for the criterion baseline workflow
 # (`--save-baseline` / `--baseline`) documented in the README.
-criterion = { version = "0.5", features = ["html_reports"] }
+criterion = { version = "0.8", features = ["html_reports"] }
 serde_json = { version = "1.0" }
 
 [lib]
