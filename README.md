@@ -215,3 +215,24 @@ We appreciate your interest and look forward to your contributions!
 ## ✍️ License
 
 Licensed under **MIT** license
+
+<!-- related-projects:start -->
+## Related projects
+
+Repositories by the same author that this project depends on, and repositories that depend on it.
+
+### Depends on
+
+| Repository | Description |
+|------------|-------------|
+| [ExpirationDate](https://github.com/joaquinbejar/ExpirationDate) · [crates.io](https://crates.io/crates/expiration_date) | Financial instrument expiration dates: parsing, arithmetic and time-to-expiry helpers. |
+| [financial_types](https://github.com/joaquinbejar/financial_types) · [crates.io](https://crates.io/crates/financial_types) | Fundamental enums for financial applications (sides, asset classes, order types). |
+| [positive](https://github.com/joaquinbejar/positive) · [crates.io](https://crates.io/crates/positive) | Type-safe wrapper for guaranteed non-negative Decimal values. |
+
+### Used by
+
+| Repository | Description |
+|------------|-------------|
+| [OptionStratLib](https://github.com/joaquinbejar/OptionStratLib) · [crates.io](https://crates.io/crates/optionstratlib) | Options pricing, Greeks, strategies and simulation library. |
+
+<!-- related-projects:end -->
