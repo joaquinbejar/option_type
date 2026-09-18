@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-09-18
+
+### Changed
+
+- Dependencies updated to latest stable versions: rebuilt and verified
+  against `positive` 0.6.1, `financial_types` 0.2.3 and `expiration_date`
+  0.3.1 (all picked up through the existing `0.6` / `0.2` / `0.3`
+  requirements; no API change).
+
 ## [0.3.0] - 2026-08-17
 
 ### Changed — breaking
