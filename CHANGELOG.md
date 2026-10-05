@@ -7,7 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
+## [0.4.0] - 2026-10-05
+
+### Changed — breaking
+
+- Dependencies moved to the utoipa 6 line, all of which appear in this
+  crate's public API: `positive` 0.6 -> 0.7, `expiration_date` 0.3 -> 0.4,
+  `financial_types` 0.2 -> 0.3. Consumers must move to the same versions in
+  the same step.
+- The optional `utoipa` dependency is upgraded from 5.5 to 6.0: with the
+  `utoipa` feature, every type implements `utoipa::ToSchema` from utoipa 6.
+  Crates still on utoipa 5 should stay on 0.3.
+- Minimum supported Rust version raised from 1.86 to 1.88, required by
+  utoipa 6; the MSRV CI job follows.
+
+### Housekeeping
 
 - CI and `make coverage` now require `cargo-tarpaulin` >= 0.37.5, the first
   release that reads Rust 1.99 coverage data; the CI coverage run uses
