@@ -155,10 +155,20 @@ publish: ## Publish to crates.io for real (needs CARGO_REGISTRY_TOKEN or cargo l
 # 📈 Coverage
 # =============================================================================
 
+# cargo-tarpaulin < 0.37.5 cannot read coverage data from Rust 1.99+, so an
+# older binary already on PATH is upgraded rather than reused.
+TARPAULIN_MIN := 0.37.5
+
+.PHONY: tarpaulin-install
+tarpaulin-install: ## Install cargo-tarpaulin, upgrading it if older than $(TARPAULIN_MIN)
+	@v=$$(cargo tarpaulin --version 2>/dev/null | awk '{print $$NF}'); \
+	if [ -z "$$v" ] || [ "$$(printf '%s\n%s\n' '$(TARPAULIN_MIN)' "$$v" | sort -V | head -n1)" != '$(TARPAULIN_MIN)' ]; then \
+		cargo install cargo-tarpaulin --locked --version '>=$(TARPAULIN_MIN)'; \
+	fi
+
 .PHONY: coverage
-coverage: ## Generate code coverage report (XML via tarpaulin, all-features)
+coverage: tarpaulin-install ## Generate code coverage report (XML via tarpaulin, all-features)
 	@echo "📊 Generating code coverage report (XML)..."
-	@command -v cargo-tarpaulin > /dev/null || cargo install cargo-tarpaulin
 	@mkdir -p coverage
 	RUST_LOG=warn cargo tarpaulin --verbose --all-features --timeout 120 --out Xml --output-dir coverage
 
