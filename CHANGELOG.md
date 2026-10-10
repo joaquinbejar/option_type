@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-10
+
+### Changed — breaking
+
+- `positive` 0.7 -> 0.8 and `expiration_date` 0.4 -> 0.5, both of which
+  appear in this crate's public API; consumers must move to the same
+  versions in the same step. `positive` 0.8 removes the `non-zero` feature:
+  `Positive` is always `>= 0` and `StrictlyPositive` is the only strictly
+  positive type. This crate never enabled that feature, so its own behavior
+  is unchanged.
+
 ## [0.4.0] - 2026-10-05
 
 ### Changed — breaking
