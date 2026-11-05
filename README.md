@@ -56,13 +56,17 @@ derives `Eq` and `Hash`.
 
 ### Feature flags
 
+- **`clock`** (on by default): forwards to the `clock` feature of
+  [`expiration_date`], which adds the conversions that ask the system for the
+  time. This crate calls none of them, so a deterministic consumer can set
+  `default-features = false` to keep `Utc::now` out of the dependency graph.
 - **`utoipa`** (off by default): adds a `utoipa::ToSchema` derivation to every
   public type — [`OptionType`], the leaf sub-enums, and [`OptionBasicType`] —
   so they can be embedded in OpenAPI schemas, and forwards the feature to the
   [`financial_types`], [`positive`], and [`expiration_date`] dependencies.
 
-Note that all public types exist in both configurations; the feature only adds
-the `ToSchema` implementation. No item in this crate is gated behind `utoipa`,
+Note that all public types exist in every configuration; `utoipa` only adds
+the `ToSchema` implementation. No item in this crate is gated behind a feature,
 so none carries a `doc(cfg)` badge on <https://docs.rs>.
 
 ### Usage
