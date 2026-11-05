@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-05
+
+### Added
+
+- `clock` feature, on by default, which forwards to `expiration_date/clock`.
+  This crate calls no method that reads the clock, so with
+  `default-features = false` nothing in it pulls `Utc::now` into the build.
+
+### Changed — breaking
+
+- `expiration_date` 0.5 -> 0.6, whose `ExpirationDate` appears in this crate's
+  public API through `OptionBasicType`; consumers must move to the same version
+  in the same step. See its changelog for what changed. Most notably, `Ord` no
+  longer reads the clock: every `Days` comes before every `DateTime`, and
+  `cmp_at` compares them in time from an explicit base. Deriving `Eq` and `Hash`
+  on `OptionBasicType` is unaffected.
+
 ## [0.5.0] - 2026-10-10
 
 ### Changed — breaking
