@@ -96,7 +96,6 @@ If you have any questions, issues, or would like to provide feedback, please fee
 
 
 ### **Contact Information**
-
 - **Author**: Joaquín Béjar García
 - **Email**: jb@taunais.com
 - **Telegram**: [@joaquin_bejar](https://t.me/joaquin_bejar)
@@ -118,14 +117,14 @@ Repositories by the same author that this project depends on, and repositories t
 
 | Repository | Description |
 |------------|-------------|
-| [ExpirationDate](https://github.com/joaquinbejar/ExpirationDate) · [crates.io](https://crates.io/crates/expiration_date) | Financial instrument expiration dates: parsing, arithmetic and time-to-expiry helpers. |
-| [financial_types](https://github.com/joaquinbejar/financial_types) · [crates.io](https://crates.io/crates/financial_types) | Fundamental enums for financial applications (sides, asset classes, order types). |
-| [positive](https://github.com/joaquinbejar/positive) · [crates.io](https://crates.io/crates/positive) | Type-safe wrapper for guaranteed non-negative Decimal values. |
+| [ExpirationDate](https://github.com/joaquinbejar/ExpirationDate) | Expiration date type attached to option contracts. |
+| [financial_types](https://github.com/joaquinbejar/financial_types) | Shared financial enums such as option style and side. |
+| [positive](https://github.com/joaquinbejar/positive) | Positive decimal type for strikes, barriers and other non negative parameters. |
 
 ### Used by
 
 | Repository | Description |
 |------------|-------------|
-| [OptionStratLib](https://github.com/joaquinbejar/OptionStratLib) · [crates.io](https://crates.io/crates/optionstratlib) | Options pricing, Greeks, strategies and simulation library. |
+| [OptionStratLib](https://github.com/joaquinbejar/OptionStratLib) | Rust library for options trading and strategy development; uses option_type to classify vanilla and exotic contracts. |
 
 <!-- related-projects:end -->
