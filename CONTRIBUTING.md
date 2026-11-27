@@ -148,6 +148,10 @@ bump). When you bump it, update all three of:
 2. the pinned toolchain in `.github/workflows/msrv.yml`,
 3. the MSRV section in the README (edit `README.tpl` and run `make readme`).
 
+## Dependencies
+
+Pull requests must not add dependencies (crates, packages, libraries, actions) that are owned, maintained or published by the pull request's author. If you need functionality from a library you maintain, implement the needed logic directly in this repository instead. PRs that add such a dependency will be asked to remove it before review continues. Any new third party dependency must be justified in the PR description (why it is needed, license, maintenance status).
+
 ## Pre-submission checklist
 
 Before you open a PR:
